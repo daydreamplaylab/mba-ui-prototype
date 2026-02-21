@@ -19,6 +19,24 @@ export function UserProvider({ children }) {
     return localStorage.getItem('offerland_has_seen_popup') === 'true';
   });
 
+  const [stories, setStories] = useState(() => {
+    try {
+      const saved = localStorage.getItem('offerland_stories');
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
+  });
+
+  const [categoryProgress, setCategoryProgress] = useState(() => {
+    try {
+      const saved = localStorage.getItem('offerland_category_progress');
+      return saved ? JSON.parse(saved) : {};
+    } catch {
+      return {};
+    }
+  });
+
   // 确认弹窗逻辑
   const markPopupAsSeen = () => {
     setHasSeenPopup(true);
@@ -67,6 +85,51 @@ export function UserProvider({ children }) {
     return viewedSchools.length < 3;
   };
 
+  const canSaveStory = () => {
+    if (isPaidUser) return true;
+    return stories.length < 3;
+  };
+
+  const getRemainingStories = () => {
+    if (isPaidUser) return '∞';
+    return Math.max(0, 3 - stories.length);
+  };
+
+  const getUsedStoriesDisplay = () => {
+    if (isPaidUser) return '∞';
+    return `${stories.length}/3 free stories`;
+  };
+
+  const addStory = (story) => {
+    const newStory = { ...story, id: Date.now(), dateAdded: new Date().toISOString().split('T')[0] };
+    const newStories = [...stories, newStory];
+    setStories(newStories);
+    localStorage.setItem('offerland_stories', JSON.stringify(newStories));
+    return newStory;
+  };
+
+  const updateStory = (storyId, updates) => {
+    const newStories = stories.map(s => s.id === storyId ? { ...s, ...updates } : s);
+    setStories(newStories);
+    localStorage.setItem('offerland_stories', JSON.stringify(newStories));
+  };
+
+  const deleteStory = (storyId) => {
+    const newStories = stories.filter(s => s.id !== storyId);
+    setStories(newStories);
+    localStorage.setItem('offerland_stories', JSON.stringify(newStories));
+  };
+
+  const updateCategoryProgress = (categoryId, progress) => {
+    const newProgress = { ...categoryProgress, [categoryId]: progress };
+    setCategoryProgress(newProgress);
+    localStorage.setItem('offerland_category_progress', JSON.stringify(newProgress));
+  };
+
+  const getCategoryStatus = (categoryId) => {
+    return categoryProgress[categoryId] || 'not_started';
+  };
+
   const value = {
     isPaidUser,
     setIsPaidUser,
@@ -81,6 +144,16 @@ export function UserProvider({ children }) {
     getRemainingViews,
     getUsedViewsDisplay,
     canViewSchool,
+    stories,
+    addStory,
+    updateStory,
+    deleteStory,
+    canSaveStory,
+    getRemainingStories,
+    getUsedStoriesDisplay,
+    categoryProgress,
+    updateCategoryProgress,
+    getCategoryStatus,
   };
 
   return (

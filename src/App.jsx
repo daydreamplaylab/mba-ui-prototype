@@ -8,6 +8,10 @@ import SchoolList from './components/schools/SchoolList';
 import SchoolDetail from './components/schools/SchoolDetail';
 import MySchools from './components/schools/MySchools';
 import Pricing from './pages/Pricing';
+import StoriesDashboard from './components/stories/StoriesDashboard';
+import BrainstormPage from './components/stories/BrainstormPage';
+import CompletionSummary from './components/stories/CompletionSummary';
+import SummaryPage from './components/stories/SummaryPage';
 
 function App() {
   return (
@@ -22,6 +26,10 @@ function App() {
             <Route path="/schools/:id" element={<SchoolDetail />} />
             <Route path="/my-schools" element={<MySchools />} />
             <Route path="/pricing" element={<Pricing />} />
+            <Route path="/stories" element={<StoriesDashboard />} />
+            <Route path="/stories/:categoryId" element={<BrainstormPage />} />
+            <Route path="/stories/completion" element={<CompletionSummary />} />
+            <Route path="/stories/:categoryId/summary" element={<SummaryPage />} />
           </Routes>
           <UserToggle />
         </div>
