@@ -9,7 +9,7 @@ import UpgradePrompt from '../common/UpgradePrompt';
 
 export default function StoriesDashboard() {
   const navigate = useNavigate();
-  const { isPaidUser, getCategoryStatus, stories } = useUser();
+  const { isPaidUser, stories } = useUser();
   const [showUpgradePrompt, setShowUpgradePrompt] = useState(false);
   const [lockedCategory, setLockedCategory] = useState(null);
 
@@ -39,19 +39,8 @@ export default function StoriesDashboard() {
     setLockedCategory(null);
   };
 
-  const getStatusDisplay = (categoryId) => {
-    const status = getCategoryStatus(categoryId);
-    const categoryStories = stories.filter(s => s.categoryId === categoryId);
-    
-    if (status === 'completed') {
-      return { text: 'Completed', color: 'text-green-600', bgColor: 'bg-green-50' };
-    }
-    
-    if (categoryStories.length > 0) {
-      return { text: `In progress (${categoryStories.length})`, color: 'text-purple-600', bgColor: 'bg-purple-50' };
-    }
-    
-    return { text: 'Not started', color: 'text-gray-500', bgColor: 'bg-gray-50' };
+  const getStoryCount = (categoryId) => {
+    return stories.filter(s => s.categoryId === categoryId).length;
   };
 
   return (
@@ -71,7 +60,7 @@ export default function StoriesDashboard() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
           {categories.map((category) => {
             const isUnlocked = isPaidUser || category.unlocked;
-            const statusDisplay = getStatusDisplay(category.id);
+            const storyCount = getStoryCount(category.id);
             
             return (
               <div
@@ -94,8 +83,8 @@ export default function StoriesDashboard() {
                   {category.description}
                 </p>
                 
-                <div className={`inline-flex px-3 py-1 rounded-full text-xs ${statusDisplay.bgColor} ${statusDisplay.color}`}>
-                  {statusDisplay.text}
+                <div className="text-sm text-gray-500">
+                  {storyCount} {storyCount === 1 ? 'story' : 'stories'} saved
                 </div>
 
                 <div className="absolute bottom-6 right-6 opacity-0 group-hover:opacity-100 transition-opacity">
