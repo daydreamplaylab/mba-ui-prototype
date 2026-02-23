@@ -1,14 +1,13 @@
 import { useState, useMemo } from 'react';
 import { useUser } from '../../context/useUser';
 import { categories } from '../../data/stories';
-import { Search, Plus, Edit2, Trash2, X } from 'lucide-react';
+import { Plus, Edit2, Trash2, X } from 'lucide-react';
 import StoryDetailModal from './StoryDetailModal';
 import AddStoryModal from './AddStoryModal';
 import UpgradePrompt from '../common/UpgradePrompt';
 
 export default function StoryBank() {
-  const { stories, deleteStory, canSaveStory, isPaidUser, getUsedStoriesDisplay } = useUser();
-  const [searchQuery, setSearchQuery] = useState('');
+  const { stories, deleteStory, canSaveStory, isPaidUser, getUsedStoriesDisplay, customCategories } = useUser();
   const [categoryFilter, setCategoryFilter] = useState('all');
   const [selectedStory, setSelectedStory] = useState(null);
   const [showAddModal, setShowAddModal] = useState(false);
@@ -16,11 +15,10 @@ export default function StoryBank() {
 
   const filteredStories = useMemo(() => {
     return stories.filter(story => {
-      const matchesSearch = story.title.toLowerCase().includes(searchQuery.toLowerCase());
       const matchesCategory = categoryFilter === 'all' || story.categoryId === categoryFilter;
-      return matchesSearch && matchesCategory;
+      return matchesCategory;
     });
-  }, [stories, searchQuery, categoryFilter]);
+  }, [stories, categoryFilter]);
 
   const handleAddStory = () => {
     if (!canSaveStory()) {
@@ -65,20 +63,8 @@ export default function StoryBank() {
         </div>
       )}
 
-      <div className="flex flex-col sm:flex-row gap-4 mb-6">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-          <input
-            type="text"
-            placeholder="Search stories..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 bg-white border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-400"
-          />
-        </div>
-        
-        <div className="flex gap-2 flex-wrap">
-          {['all', 'leadership', 'impact', 'failure', 'teamwork', 'why-mba', 'career-vision'].map((cat) => (
+      <div className="flex gap-2 flex-wrap">
+          {['all', 'leadership', 'impact', 'failure', 'teamwork', 'why-mba', 'career-vision', ...customCategories].map((cat) => (
             <button
               key={cat}
               onClick={() => setCategoryFilter(cat)}
@@ -92,7 +78,6 @@ export default function StoryBank() {
             </button>
           ))}
         </div>
-      </div>
 
       {filteredStories.length === 0 ? (
         <div className="text-center py-12 bg-gray-50 rounded-2xl">
@@ -128,15 +113,15 @@ export default function StoryBank() {
                 </div>
               </div>
               
+              <p className="text-xs text-gray-500 line-clamp-2 mb-2">
+                {story.star?.situation || story.userDraft?.substring(0, 100)}
+              </p>
+              
               <div className="flex items-center gap-2 mb-2">
                 <span className="px-2 py-0.5 bg-purple-50 text-purple-600 text-xs rounded-full">
                   {getCategoryName(story.categoryId)}
                 </span>
               </div>
-              
-              <p className="text-xs text-gray-500 line-clamp-2 mb-2">
-                {story.star?.situation || story.userDraft?.substring(0, 100)}
-              </p>
               
               <p className="text-xs text-gray-400">{story.dateAdded}</p>
             </div>

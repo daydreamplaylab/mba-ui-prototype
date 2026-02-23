@@ -1,16 +1,19 @@
 import { useState, useMemo, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ChevronDown, ChevronUp, Lightbulb, AlertCircle, ArrowRight, RotateCcw, Plus } from 'lucide-react';
+import { ChevronDown, ChevronUp, Lightbulb, AlertCircle, ArrowRight, RotateCcw, Plus, Lock } from 'lucide-react';
 import { useUser } from '../../context/useUser';
 import { categories, questions, tipsAndMistakes } from '../../data/stories';
 import BackButton from '../../components/common/BackButton';
 import STARCard from './STARCard';
 import CompletionSummary from './CompletionSummary';
+import UpgradePrompt from '../common/UpgradePrompt';
 
 export default function BrainstormPage() {
   const { categoryId } = useParams();
   const navigate = useNavigate();
   const { addStory, canSaveStory, isPaidUser, stories } = useUser();
+  
+  const [showUpgradePrompt, setShowUpgradePrompt] = useState(false);
 
   const categoryQuestions = useMemo(() => questions[categoryId] || [], [categoryId]);
   
@@ -31,6 +34,12 @@ export default function BrainstormPage() {
   const [showTips, setShowTips] = useState(false);
   const [activeTab, setActiveTab] = useState('ai');
 
+  const mockDrafts = {
+    0: "When I was working as a product manager at a tech startup, our team faced a critical challenge. We had a major product launch scheduled in 3 months, but our lead engineer suddenly left the company. The remaining team was stressed and morale was low. I stepped up to lead the remaining 4 engineers, reorganizing our sprint priorities and mentoring two junior developers who were recently hired. Through daily stand-ups, clear task delegation, and maintaining transparent communication with stakeholders, we successfully launched the product on time with minimal bugs.",
+    1: "During my time as a team lead, I noticed that our project delivery was consistently delayed due to miscommunication between departments. The teams were working in silos and there was no shared understanding of priorities.",
+    2: "",
+  };
+
   useEffect(() => {
     setQuestionIndex(currentQuestionIndex);
   }, [currentQuestionIndex]);
@@ -39,7 +48,7 @@ export default function BrainstormPage() {
     const question = categoryQuestions[questionIndex];
     if (question) {
       setCurrentQuestion(question);
-      setUserDraft('');
+      setUserDraft(mockDrafts[questionIndex] || '');
       setGeneratedStar(null);
       setViewState('writing');
       setActiveTab('ai');
@@ -59,12 +68,32 @@ export default function BrainstormPage() {
     setIsGenerating(true);
     
     setTimeout(() => {
-      setGeneratedStar({
-        situation: userDraft.substring(0, 150) + '...',
-        task: 'Analyze the context and identify key objectives from your experience.',
-        action: 'Structure the narrative using STAR methodology to highlight your specific actions.',
-        result: 'Successfully crafted a compelling story demonstrating your capabilities.',
-      });
+      let generatedStarData;
+      
+      if (questionIndex === 0) {
+        generatedStarData = {
+          situation: userDraft,
+          task: 'Identify the key objectives and challenges faced by the team during this leadership opportunity.',
+          action: 'Organized weekly team meetings, delegated tasks based on individual strengths, and implemented a new communication protocol to streamline decision-making. Provided mentorship to junior team members and facilitated conflict resolution when needed.',
+          result: 'Successfully led the team to exceed quarterly targets by 25%, improved team satisfaction scores by 40%, and reduced project delivery time by 2 weeks.',
+        };
+      } else if (questionIndex === 1) {
+        generatedStarData = {
+          situation: userDraft,
+          task: 'Analyze the context and identify key objectives from your experience.',
+          action: '',
+          result: '',
+        };
+      } else {
+        generatedStarData = {
+          situation: userDraft.substring(0, 150) + '...',
+          task: 'Analyze the context and identify key objectives from your experience.',
+          action: 'Structure the narrative using STAR methodology to highlight your specific actions.',
+          result: 'Successfully crafted a compelling story demonstrating your capabilities.',
+        };
+      }
+      
+      setGeneratedStar(generatedStarData);
       setIsGenerating(false);
       setViewState('review');
     }, 1000);
@@ -78,15 +107,29 @@ export default function BrainstormPage() {
     }
   };
 
+  const generateTitle = (draft, categoryName) => {
+    const firstSentence = draft.split(/[.!?]/)[0];
+    if (firstSentence.length > 60) {
+      return firstSentence.substring(0, 60).trim() + '...';
+    }
+    return firstSentence || `${categoryName} Story`;
+  };
+
   const handleSaveAndNext = () => {
     if (!generatedStar || !canSaveStory()) return;
     
+    const categoryName = categories.find(c => c.id === categoryId)?.name;
     addStory({
       categoryId,
-      title: `${categories.find(c => c.id === categoryId)?.name} - Question ${questionIndex + 1}`,
+      title: generateTitle(userDraft, categoryName),
       userDraft,
       star: generatedStar,
     });
+
+    if (!isPaidUser && stories.length >= 2) {
+      setShowUpgradePrompt(true);
+      return;
+    }
 
     if (questionIndex < categoryQuestions.length - 1) {
       setQuestionIndex(questionIndex + 1);
@@ -100,6 +143,20 @@ export default function BrainstormPage() {
     setUserDraft('');
     setViewState('writing');
     setActiveTab('ai');
+  };
+
+  const handleSaveAndAddAnother = () => {
+    if (!generatedStar || !canSaveStory()) return;
+    
+    const categoryName = categories.find(c => c.id === categoryId)?.name;
+    addStory({
+      categoryId,
+      title: generateTitle(userDraft, categoryName),
+      userDraft,
+      star: generatedStar,
+    });
+
+    handleAddAnother();
   };
 
   const handleStartOver = () => {
@@ -175,6 +232,7 @@ export default function BrainstormPage() {
   }
 
   const category = categories.find(c => c.id === categoryId);
+  const categoryTips = tipsAndMistakes[categoryId] || tipsAndMistakes.leadership;
 
   return (
     <div className="min-h-screen pb-20">
@@ -201,7 +259,7 @@ export default function BrainstormPage() {
                   className="flex items-center gap-2 text-sm text-gray-600 hover:text-gray-900"
                 >
                   {showSubQuestions ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
-                  Consider these questions
+                  Getting stuck? Reflect on questions below
                 </button>
                 
                 {showSubQuestions && (
@@ -223,7 +281,7 @@ export default function BrainstormPage() {
                 >
                   {showTips ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
                   <Lightbulb size={16} className="text-yellow-500" />
-                  Tips & Mistakes
+                  View tips & mistakes for {category?.name.toLowerCase()} stories
                 </button>
                 
                 {showTips && (
@@ -231,7 +289,7 @@ export default function BrainstormPage() {
                     <div>
                       <p className="text-xs font-medium text-gray-700 mb-1">Tips</p>
                       <ul className="space-y-1">
-                        {currentQuestion.tips.map((tip, i) => (
+                        {categoryTips.tips.map((tip, i) => (
                           <li key={i} className="text-xs text-green-600 flex items-start gap-1">
                             <span className="text-green-400">✓</span>
                             {tip}
@@ -242,7 +300,7 @@ export default function BrainstormPage() {
                     <div>
                       <p className="text-xs font-medium text-gray-700 mb-1">Mistakes to avoid</p>
                       <ul className="space-y-1">
-                        {currentQuestion.mistakes.map((mistake, i) => (
+                        {categoryTips.mistakes.map((mistake, i) => (
                           <li key={i} className="text-xs text-red-500 flex items-start gap-1">
                             <AlertCircle size={12} />
                             {mistake}
@@ -262,7 +320,8 @@ export default function BrainstormPage() {
                     value={userDraft}
                     onChange={(e) => setUserDraft(e.target.value)}
                     placeholder="Start writing your story here..."
-                    className="flex-1 w-full px-4 py-3 border border-gray-200 rounded-xl text-gray-700 resize-none focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-400"
+                    disabled={!isPaidUser && stories.length >= 3}
+                    className={`flex-1 w-full px-4 py-3 border border-gray-200 rounded-xl text-gray-700 resize-none focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-400 ${!isPaidUser && stories.length >= 3 ? 'bg-gray-100 cursor-not-allowed' : ''}`}
                   />
                   
                   <div className="flex justify-between mt-4">
@@ -274,9 +333,9 @@ export default function BrainstormPage() {
                     </button>
                     <button 
                       onClick={handleGenerate}
-                      disabled={!userDraft.trim() || isGenerating}
+                      disabled={!userDraft.trim() || isGenerating || (!isPaidUser && stories.length >= 3)}
                       className={`flex items-center gap-2 px-6 py-2.5 rounded-lg text-sm font-normal transition-colors ${
-                        userDraft.trim() && !isGenerating
+                        userDraft.trim() && !isGenerating && (isPaidUser || stories.length < 3)
                           ? 'bg-gray-900 text-white hover:bg-gray-800'
                           : 'bg-gray-100 text-gray-400 cursor-not-allowed'
                       }`}
@@ -285,6 +344,12 @@ export default function BrainstormPage() {
                       <ArrowRight size={16} />
                     </button>
                   </div>
+
+                  {!isPaidUser && stories.length >= 3 && (
+                    <p className="text-xs text-red-500 mt-3 text-center">
+                      You've reached the free story limit. Upgrade to save more stories.
+                    </p>
+                  )}
                 </div>
               ) : (
                 <div className="h-full flex flex-col">
@@ -323,41 +388,49 @@ export default function BrainstormPage() {
                   {activeTab === 'ai' && (
                     <div className="mb-4 flex-1">
                       <div className="bg-gray-50 rounded-xl p-4 h-full">
-                        <STARCard star={generatedStar} />
+                        <STARCard 
+                          star={generatedStar} 
+                          editable={true} 
+                          onChange={setGeneratedStar} 
+                        />
                       </div>
                     </div>
                   )}
 
                   <div className="flex justify-between pt-4 border-t border-gray-100">
+                    <button 
+                      onClick={handleStartOver}
+                      className="flex items-center gap-2 px-4 py-2 text-sm text-gray-500 hover:text-gray-700"
+                    >
+                      <RotateCcw size={16} />
+                      Start Over
+                    </button>
+                    
                     <div className="flex gap-3">
                       <button 
-                        onClick={handleAddAnother}
-                        className="flex items-center gap-2 px-4 py-2 border border-gray-200 rounded-lg text-sm text-gray-600 hover:bg-gray-50"
+                        onClick={handleSaveAndAddAnother}
+                        disabled={!canSaveStory() || !isPaidUser}
+                        className={`flex items-center gap-2 px-4 py-2 border border-gray-200 rounded-lg text-sm text-gray-600 hover:bg-gray-50 ${
+                          !canSaveStory() || !isPaidUser ? 'opacity-50 cursor-not-allowed' : ''
+                        }`}
                       >
+                        {!isPaidUser && <Lock size={14} className="text-gray-400" />}
                         <Plus size={16} />
-                        Add Another
+                        Save & Add Another
                       </button>
                       <button 
-                        onClick={handleStartOver}
-                        className="flex items-center gap-2 px-4 py-2 text-sm text-gray-500 hover:text-gray-700"
+                        onClick={handleSaveAndNext}
+                        disabled={!canSaveStory()}
+                        className={`flex items-center gap-2 px-6 py-2.5 rounded-lg text-sm font-normal transition-colors ${
+                          canSaveStory()
+                            ? 'bg-purple-500 text-white hover:bg-purple-600'
+                            : 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                        }`}
                       >
-                        <RotateCcw size={16} />
-                        Start Over
+                        {questionIndex < categoryQuestions.length - 1 ? 'Save & Next Question' : 'Save & Complete'}
+                        <ArrowRight size={16} />
                       </button>
                     </div>
-                    
-                    <button 
-                      onClick={handleSaveAndNext}
-                      disabled={!canSaveStory()}
-                      className={`flex items-center gap-2 px-6 py-2.5 rounded-lg text-sm font-normal transition-colors ${
-                        canSaveStory()
-                          ? 'bg-purple-500 text-white hover:bg-purple-600'
-                          : 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                      }`}
-                    >
-                      {questionIndex < categoryQuestions.length - 1 ? 'Save & Next Question' : 'Save & Complete'}
-                      <ArrowRight size={16} />
-                    </button>
                   </div>
 
                   {!canSaveStory() && !isPaidUser && (
@@ -371,6 +444,18 @@ export default function BrainstormPage() {
           </div>
         </div>
       </div>
+
+      {showUpgradePrompt && (
+        <UpgradePrompt
+          title="Story Limit Reached"
+          message="You've saved 3/3 free stories. Upgrade to unlock unlimited stories and all categories."
+          onUpgrade={() => navigate('/pricing')}
+          onClose={() => {
+            setShowUpgradePrompt(false);
+            navigate('/stories');
+          }}
+        />
+      )}
     </div>
   );
 }

@@ -8,9 +8,12 @@ export default function AddStoryModal({ onClose }) {
   const { addStory } = useUser();
   const [step, setStep] = useState(1);
   const [categoryId, setCategoryId] = useState('leadership');
+  const [customCategory, setCustomCategory] = useState('');
   const [userDraft, setUserDraft] = useState('');
   const [generatedStar, setGeneratedStar] = useState(null);
   const [isGenerating, setIsGenerating] = useState(false);
+
+  const allCategories = [...categories, { id: 'other', name: 'Other' }];
 
   const handleGenerate = () => {
     if (!userDraft.trim()) return;
@@ -21,7 +24,7 @@ export default function AddStoryModal({ onClose }) {
       setGeneratedStar({
         situation: userDraft.substring(0, 150) + '...',
         task: 'Analyze the context and identify key objectives from the story.',
-        action: 'Structure the narrative using STAR methodology to highlight key actions taken.',
+        action: 'Structure the STAR methodology to highlight key actions taken.',
         result: 'Successfully crafted a compelling story with clear outcomes and impact.',
       });
       setIsGenerating(false);
@@ -32,9 +35,10 @@ export default function AddStoryModal({ onClose }) {
   const handleSave = () => {
     if (!generatedStar) return;
     
+    const finalCategoryId = categoryId === 'other' ? customCategory : categoryId;
     const newStory = {
-      categoryId,
-      title: `${categories.find(c => c.id === categoryId)?.name} Story`,
+      categoryId: finalCategoryId,
+      title: `${categoryId === 'other' ? customCategory : categories.find(c => c.id === categoryId)?.name} Story`,
       userDraft,
       star: generatedStar,
     };
@@ -50,10 +54,10 @@ export default function AddStoryModal({ onClose }) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <div className="fixed inset-0 bg-black/30 backdrop-blur-sm" onClick={onClose}></div>
+    <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
+      <div className="absolute inset-0 bg-black/30" onClick={onClose}></div>
       
-      <div className="bg-white rounded-2xl shadow-2xl w-[70vw] h-[80vh] max-w-5xl pointer-events-auto flex flex-col">
+      <div className="bg-white rounded-2xl shadow-2xl w-[70vw] h-[80vh] max-w-5xl flex flex-col relative z-10">
         <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 flex-shrink-0">
           <h2 className="text-lg font-normal text-gray-900">Add New Story</h2>
           <button onClick={onClose} className="p-1 text-gray-400 hover:text-gray-600">
@@ -68,14 +72,32 @@ export default function AddStoryModal({ onClose }) {
                 <label className="block text-xs text-gray-500 mb-1">Category</label>
                 <select
                   value={categoryId}
-                  onChange={(e) => setCategoryId(e.target.value)}
+                  onChange={(e) => {
+                    setCategoryId(e.target.value);
+                    if (e.target.value !== 'other') {
+                      setCustomCategory('');
+                    }
+                  }}
                   className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-purple-500/20"
                 >
-                  {categories.map(cat => (
+                  {allCategories.map(cat => (
                     <option key={cat.id} value={cat.id}>{cat.name}</option>
                   ))}
                 </select>
               </div>
+
+              {categoryId === 'other' && (
+                <div className="mb-4 flex-shrink-0">
+                  <label className="block text-xs text-gray-500 mb-1">Custom Category Name</label>
+                  <input
+                    type="text"
+                    value={customCategory}
+                    onChange={(e) => setCustomCategory(e.target.value)}
+                    placeholder="Enter custom category name..."
+                    className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-purple-500/20"
+                  />
+                </div>
+              )}
 
               <div className="flex-1 flex flex-col">
                 <label className="block text-xs text-gray-500 mb-1 flex-shrink-0">Your Story</label>

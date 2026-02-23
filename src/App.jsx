@@ -12,6 +12,10 @@ import StoriesDashboard from './components/stories/StoriesDashboard';
 import BrainstormPage from './components/stories/BrainstormPage';
 import CompletionSummary from './components/stories/CompletionSummary';
 import SummaryPage from './components/stories/SummaryPage';
+import ApplicationMaterialsDashboard from './components/application/ApplicationMaterialsDashboard';
+import ApplicationSectionPage from './components/application/ApplicationSectionPage';
+import InterviewPrepPage from './components/interview/InterviewPrepPage';
+import ApplicationPlanPage from './components/plan/ApplicationPlanPage';
 
 function App() {
   return (
@@ -30,6 +34,10 @@ function App() {
             <Route path="/stories/:categoryId" element={<BrainstormPage />} />
             <Route path="/stories/completion" element={<CompletionSummary />} />
             <Route path="/stories/:categoryId/summary" element={<SummaryPage />} />
+            <Route path="/application" element={<ApplicationMaterialsDashboard />} />
+            <Route path="/application/:sectionId" element={<ApplicationSectionPage />} />
+            <Route path="/interview" element={<InterviewPrepPage />} />
+            <Route path="/plan" element={<ApplicationPlanPage />} />
           </Routes>
           <UserToggle />
         </div>

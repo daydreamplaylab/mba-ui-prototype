@@ -37,6 +37,15 @@ export function UserProvider({ children }) {
     }
   });
 
+  const [customCategories, setCustomCategories] = useState(() => {
+    try {
+      const saved = localStorage.getItem('offerland_custom_categories');
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
+  });
+
   // 确认弹窗逻辑
   const markPopupAsSeen = () => {
     setHasSeenPopup(true);
@@ -105,6 +114,13 @@ export function UserProvider({ children }) {
     const newStories = [...stories, newStory];
     setStories(newStories);
     localStorage.setItem('offerland_stories', JSON.stringify(newStories));
+    
+    if (story.categoryId && !categories.find(c => c.id === story.categoryId) && !customCategories.includes(story.categoryId)) {
+      const newCategories = [...customCategories, story.categoryId];
+      setCustomCategories(newCategories);
+      localStorage.setItem('offerland_custom_categories', JSON.stringify(newCategories));
+    }
+    
     return newStory;
   };
 
@@ -154,6 +170,7 @@ export function UserProvider({ children }) {
     categoryProgress,
     updateCategoryProgress,
     getCategoryStatus,
+    customCategories,
   };
 
   return (

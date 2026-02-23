@@ -67,10 +67,13 @@ export default function Dashboard() {
         navigate('/stories');
         break;
       case 'materials':
+        navigate('/application');
         break;
       case 'interview':
+        navigate('/interview');
         break;
       case 'plan':
+        navigate('/plan');
         break;
       default:
         break;

@@ -31,6 +31,18 @@ export default function STARCard({ star, editable = false, onChange }) {
   };
 
   const renderContent = (field, content, placeholder) => {
+    if (!content && editable) {
+      return (
+        <textarea
+          value=""
+          onChange={(e) => handleChange(field, e.target.value)}
+          placeholder={placeholder}
+          className="w-full bg-transparent border border-gray-200 rounded text-sm text-gray-700 focus:outline-none focus:border-purple-400 p-2"
+          rows={2}
+        />
+      );
+    }
+
     if (!content) {
       return (
         <p className="text-gray-400 italic text-sm">{placeholder}</p>
@@ -43,12 +55,12 @@ export default function STARCard({ star, editable = false, onChange }) {
           value={content}
           onChange={(e) => handleChange(field, e.target.value)}
           className="w-full bg-transparent border-none text-sm text-gray-700 resize-none focus:outline-none"
-          rows={3}
+          rows={Math.max(2, Math.ceil(content.length / 50))}
         />
       );
     }
 
-    return <p className="text-sm text-gray-700">{content}</p>;
+    return <p className="text-sm text-gray-700 whitespace-pre-wrap">{content}</p>;
   };
 
   return (
@@ -56,9 +68,11 @@ export default function STARCard({ star, editable = false, onChange }) {
       {Object.entries(sectionConfig).map(([field, config]) => {
         const Icon = config.icon;
         const content = star?.[field];
-        const placeholder = field === 'result' 
-          ? 'What was the outcome? Add details here.' 
-          : `Add details for ${config.label.toLowerCase()}...`;
+        const placeholder = field === 'action'
+          ? 'What actions did you take? Add details here.'
+          : field === 'result' 
+            ? 'What was the outcome? Add details here.' 
+            : `Add details for ${config.label.toLowerCase()}...`;
 
         return (
           <div key={field} className="flex gap-3">

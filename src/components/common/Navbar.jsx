@@ -1,10 +1,12 @@
 import { User, GraduationCap, Zap } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { useUser } from '../../context/useUser';
 
 export default function Navbar() {
-  const { isPaidUser, getUsedViewsDisplay } = useUser();
-  const viewsDisplay = getUsedViewsDisplay();
+  const location = useLocation();
+  const { isPaidUser, getUsedViewsDisplay, getUsedStoriesDisplay } = useUser();
+  const isStoriesPage = location.pathname.startsWith('/stories');
+  const displayText = isStoriesPage ? getUsedStoriesDisplay() : getUsedViewsDisplay();
 
   return (
     <nav className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-100 px-6 py-4 will-change-transform transition-all duration-300">
@@ -22,7 +24,7 @@ export default function Navbar() {
           {!isPaidUser && (
             <div className="flex items-center gap-2 px-3 py-1.5 bg-gray-100 text-gray-600 rounded-full text-sm font-normal">
               <Zap size={14} className="fill-current" />
-              <span>{viewsDisplay}</span>
+              <span>{displayText}</span>
             </div>
           )}
           
