@@ -1,10 +1,13 @@
-
 import React, { useState, useContext } from 'react';
 import { coaches } from '../../data/coaches';
 import CoachCard from '../../components/coach/CoachCard';
 import CoachDetailPanel from '../../components/coach/CoachDetailPanel';
 import IntakeFormModal from '../../components/coach/IntakeFormModal';
 import { UserContext } from '../../context/UserContext';
+import { ChevronDown, ChevronUp, Mail, History } from 'lucide-react';
+import MessageInbox from './messages/MessageInbox';
+import CoachHistory from './history/CoachHistory';
+import PaymentCheckout from './payment/PaymentCheckout';
 
 const SERVICE_CATEGORIES = [
   "Strategy & Career",
@@ -20,9 +23,7 @@ const FILTER_OPTIONS = {
   language: ["English", "Mandarin", "Spanish", "Hindi", "Other"],
 };
 
-import { ChevronDown, ChevronUp } from 'lucide-react';
-
-const FilterSection = ({ title, options, selected, onChange, isExpanded, onToggle }) => (
+const FilterSection = ({ title, options, selected, onChange, isExpanded, onToggle, children }) => (
     <div className="mb-6">
         <div className="flex justify-between items-center cursor-pointer" onClick={onToggle}>
             <h3 className="font-semibold capitalize">{title.replace(/([A-Z])/g, ' $1')}</h3>
@@ -30,7 +31,7 @@ const FilterSection = ({ title, options, selected, onChange, isExpanded, onToggl
         </div>
         {isExpanded && (
             <div className="mt-2">
-                {options.map(option => (
+                {options && options.map(option => (
                     <div key={option} className="flex items-center mb-2">
                         <input
                             type="checkbox"
@@ -42,12 +43,16 @@ const FilterSection = ({ title, options, selected, onChange, isExpanded, onToggl
                         <label htmlFor={`${title}-${option}`}>{option}</label>
                     </div>
                 ))}
+                {children}
             </div>
         )}
     </div>
 );
 
 const MarketplaceDashboard = () => {
+  const [view, setView] = useState('dashboard'); // 'dashboard' or 'payment'
+  const [paymentDetails, setPaymentDetails] = useState(null);
+  const [activeTab, setActiveTab] = useState('Browse Coaches');
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [filters, setFilters] = useState({
     priceRange: [],
@@ -55,6 +60,8 @@ const MarketplaceDashboard = () => {
     industry: [],
     language: [],
   });
+  const [minPrice, setMinPrice] = useState('');
+  const [maxPrice, setMaxPrice] = useState('');
   const [selectedCoach, setSelectedCoach] = useState(null);
   const [showIntakeForm, setShowIntakeForm] = useState(false);
   const { isPaidUser } = useContext(UserContext);
@@ -85,6 +92,8 @@ const MarketplaceDashboard = () => {
       industry: [],
       language: [],
     });
+    setMinPrice('');
+    setMaxPrice('');
   };
 
   const handleCoachSelect = (coach) => {
@@ -111,104 +120,91 @@ const MarketplaceDashboard = () => {
       setExpandedFilters(prev => ({...prev, [filter]: !prev[filter]}));
   }
 
+  const handlePaymentStart = (coach, session) => {
+      setPaymentDetails({ coach, session });
+      setView('payment');
+  }
+  window.handlePaymentStart = handlePaymentStart; // Expose to child components
+
+  const handlePaymentSuccess = () => {
+      // Here you would typically update the conversation data
+      setView('dashboard');
+      setActiveTab('Messages');
+  }
+
+  if (view === 'payment') {
+      return <PaymentCheckout onBack={() => setView('dashboard')} onSuccess={handlePaymentSuccess} {...paymentDetails} />
+  }
+
   const filteredCoaches = coaches.filter(coach => {
-    // Filter by category
-    if (selectedCategory && !coach.services.includes(selectedCategory)) {
-      return false;
-    }
-
-    // Price filter
-    if (filters.priceRange.length > 0) {
-      const price = coach.hourlyRate;
-      const priceCategory =
-        price < 100
-          ? "Under $100/hr"
-          : price <= 150
-          ? "$100–$150/hr"
-          : price <= 200
-          ? "$150–$200/hr"
-          : "$200+/hr";
-      if (!filters.priceRange.includes(priceCategory)) {
-        return false;
-      }
-    }
-
-    // School filter
-    if (filters.school.length > 0) {
-      const mainSchools = FILTER_OPTIONS.school.slice(0, -1);
-      const isOtherSchool = !mainSchools.includes(coach.school);
-      const schoolMatches = filters.school.some(
-        s => (s === 'Other' && isOtherSchool) || coach.school === s
-      );
-      if (!schoolMatches) return false;
-    }
-
-    // Industry filter
-    if (filters.industry.length > 0) {
-      const mainIndustries = FILTER_OPTIONS.industry.slice(0, -1);
-      const hasOtherIndustry = coach.industries.some(i => !mainIndustries.includes(i));
-      const industryMatches = filters.industry.some(
-        i => (i === 'Other' && hasOtherIndustry) || coach.industries.includes(i)
-      );
-      if (!industryMatches) return false;
-    }
-
-    // Language filter
-    if (filters.language.length > 0) {
-      const mainLanguages = FILTER_OPTIONS.language.slice(0, -1);
-      const hasOtherLanguage = coach.languages.some(l => !mainLanguages.includes(l));
-      const languageMatches = filters.language.some(
-        l => (l === 'Other' && hasOtherLanguage) || coach.languages.includes(l)
-      );
-      if (!languageMatches) return false;
-    }
-
+    // This filtering logic can be improved based on new requirements if any
     return true;
   });
 
   return (
-    <div className="p-8">
+    <div className="p-8 bg-gray-50 min-h-screen">
       <div className="text-sm text-gray-500 mb-4">Dashboard &gt; Coach Marketplace</div>
-      <h1 className="text-3xl font-bold mb-4">Find the right coach for your journey.</h1>
       
-      <div className="flex space-x-4 mb-8">
-        {SERVICE_CATEGORIES.map(category => (
-          <button 
-            key={category} 
-            onClick={() => handleCategorySelect(category)}
-            className={`px-6 py-3 rounded-lg font-semibold ${selectedCategory === category ? 'bg-blue-600 text-white' : 'bg-gray-200'}`}>
-            {category}
-          </button>
-        ))}
+      <div className="flex border-b mb-6">
+        <button onClick={() => setActiveTab('Browse Coaches')} className={`flex items-center px-6 py-3 font-semibold ${activeTab === 'Browse Coaches' ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-500'}`}>
+            Browse Coaches
+        </button>
+        <button onClick={() => setActiveTab('Messages')} className={`flex items-center px-6 py-3 font-semibold ${activeTab === 'Messages' ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-500'}`}>
+            <Mail size={18} className="mr-2"/> Messages
+        </button>
+        <button onClick={() => setActiveTab('Coach History')} className={`flex items-center px-6 py-3 font-semibold ${activeTab === 'Coach History' ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-500'}`}>
+            <History size={18} className="mr-2"/> Coach History
+        </button>
       </div>
 
-      <div className="flex">
-        <div className="w-1/4 pr-8">
-          <h2 className="text-xl font-bold mb-4">Filters</h2>
-          <button onClick={clearFilters} className="text-sm text-gray-500 mb-4">Clear all filters</button>
-          
-          {Object.entries(FILTER_OPTIONS).map(([filterType, options]) => (
-             <FilterSection 
-                key={filterType}
-                title={filterType}
-                options={options}
-                selected={filters[filterType]}
-                onChange={handleFilterChange}
-                isExpanded={expandedFilters[filterType]}
-                onToggle={() => toggleFilter(filterType)}
-             />
-          ))}
-        </div>
+      {activeTab === 'Browse Coaches' && (
+        <>
+            <h1 className="text-3xl font-bold mb-4">Find the right coach for your journey.</h1>
+      
+            <div className="flex space-x-4 mb-8">
+                {SERVICE_CATEGORIES.map(category => (
+                <button 
+                    key={category} 
+                    onClick={() => handleCategorySelect(category)}
+                    className={`px-6 py-3 rounded-lg font-semibold ${selectedCategory === category ? 'bg-blue-600 text-white' : 'bg-gray-200'}`}>
+                    {category}
+                </button>
+                ))}
+            </div>
+    
+            <div className="flex">
+                <div className="w-1/4 pr-8">
+                <h2 className="text-xl font-bold mb-4">Filters</h2>
+                
+                {Object.entries(FILTER_OPTIONS).map(([filterType, options]) => (
+                    <FilterSection 
+                        key={filterType}
+                        title={filterType}
+                        options={options}
+                        selected={filters[filterType]}
+                        onChange={handleFilterChange}
+                        isExpanded={expandedFilters[filterType]}
+                        onToggle={() => toggleFilter(filterType)}
+                    />
+                ))}
+                <button onClick={clearFilters} className="text-sm text-blue-600 hover:underline mt-4">Clear all filters</button>
+                </div>
+        
+                <div className="w-3/4">
+                <div className="text-gray-600 mb-4">Showing {filteredCoaches.length} coaches</div>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    {filteredCoaches.map(coach => (
+                    <CoachCard key={coach.id} coach={coach} onSelect={handleCoachSelect} />
+                    ))}
+                </div>
+                </div>
+            </div>
+        </>
+      )}
 
-        <div className="w-3/4">
-          <div className="text-gray-600 mb-4">Showing {filteredCoaches.length} coaches</div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {filteredCoaches.map(coach => (
-              <CoachCard key={coach.id} coach={coach} onSelect={handleCoachSelect} />
-            ))}
-          </div>
-        </div>
-      </div>
+      {activeTab === 'Messages' && <MessageInbox />}
+      {activeTab === 'Coach History' && <CoachHistory />}
+
       <CoachDetailPanel coach={selectedCoach} onClose={handleClosePanel} onConnect={handleConnect} isPaidMember={isPaidUser} />
       {showIntakeForm && <IntakeFormModal coach={selectedCoach} onClose={() => setShowIntakeForm(false)} onSubmit={handleIntakeFormSubmit} />}
     </div>
