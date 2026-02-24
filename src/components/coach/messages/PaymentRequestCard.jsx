@@ -25,6 +25,7 @@ const PaymentRequestCard = ({ data, coachName }) => {
             <p className="font-semibold">{data.title}</p>
             <p className="text-sm text-gray-600">{data.topics}</p>
             <div className="my-2 h-px bg-gray-200"></div>
+            <p className="text-sm text-gray-600">Date: {data.date}</p>
             <p className="text-sm text-gray-600">Session Length: {data.length} min</p>
             <p className="text-sm text-gray-600">Price: ${data.price}</p>
             <div className="flex justify-end mt-4 space-x-4">

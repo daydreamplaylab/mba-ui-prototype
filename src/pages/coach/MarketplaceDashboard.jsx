@@ -1,8 +1,9 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect, useRef } from 'react';
 import { coaches } from '../../data/coaches';
 import CoachCard from '../../components/coach/CoachCard';
 import CoachDetailPanel from '../../components/coach/CoachDetailPanel';
 import IntakeFormModal from '../../components/coach/IntakeFormModal';
+import Pagination from '../../components/coach/Pagination';
 import { UserContext } from '../../context/UserContext';
 import { ChevronDown, ChevronUp, Mail, History } from 'lucide-react';
 import MessageInbox from './messages/MessageInbox';
@@ -50,7 +51,7 @@ const FilterSection = ({ title, options, selected, onChange, isExpanded, onToggl
 );
 
 const MarketplaceDashboard = () => {
-  const [view, setView] = useState('dashboard'); // 'dashboard' or 'payment'
+  const [view, setView] = useState('dashboard');
   const [paymentDetails, setPaymentDetails] = useState(null);
   const [activeTab, setActiveTab] = useState('Browse Coaches');
   const [selectedCategory, setSelectedCategory] = useState(null);
@@ -62,6 +63,7 @@ const MarketplaceDashboard = () => {
   });
   const [minPrice, setMinPrice] = useState('');
   const [maxPrice, setMaxPrice] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
   const [selectedCoach, setSelectedCoach] = useState(null);
   const [showIntakeForm, setShowIntakeForm] = useState(false);
   const { isPaidUser } = useContext(UserContext);
@@ -71,9 +73,11 @@ const MarketplaceDashboard = () => {
       industry: true,
       language: true,
   });
+  const resultsRef = useRef(null);
 
   const handleCategorySelect = (category) => {
     setSelectedCategory(selectedCategory === category ? null : category);
+    setCurrentPage(1);
   };
 
   const handleFilterChange = (filterType, value) => {
@@ -83,6 +87,7 @@ const MarketplaceDashboard = () => {
         : [...prevFilters[filterType], value];
       return { ...prevFilters, [filterType]: newValues };
     });
+    setCurrentPage(1);
   };
 
   const clearFilters = () => {
@@ -94,6 +99,7 @@ const MarketplaceDashboard = () => {
     });
     setMinPrice('');
     setMaxPrice('');
+    setCurrentPage(1);
   };
 
   const handleCoachSelect = (coach) => {
@@ -112,34 +118,41 @@ const MarketplaceDashboard = () => {
 
   const handleIntakeFormSubmit = (data) => {
       console.log("Intake form data:", data);
-      setShowIntakeForm(false);
-      setSelectedCoach(null);
   }
 
   const toggleFilter = (filter) => {
       setExpandedFilters(prev => ({...prev, [filter]: !prev[filter]}));
   }
-
+  
   const handlePaymentStart = (coach, session) => {
       setPaymentDetails({ coach, session });
       setView('payment');
   }
-  window.handlePaymentStart = handlePaymentStart; // Expose to child components
+  window.handlePaymentStart = handlePaymentStart;
 
   const handlePaymentSuccess = () => {
-      // Here you would typically update the conversation data
       setView('dashboard');
       setActiveTab('Messages');
   }
 
+  useEffect(() => {
+    if (activeTab === 'Browse Coaches' && resultsRef.current) {
+      resultsRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }, [currentPage, activeTab]);
+
+  const filteredCoaches = coaches.filter(coach => {
+    // This can be expanded with the actual filter logic
+    return true;
+  });
+
+  const coachesPerPage = 12;
+  const totalPages = Math.ceil(filteredCoaches.length / coachesPerPage);
+  const paginatedCoaches = filteredCoaches.slice((currentPage - 1) * coachesPerPage, currentPage * coachesPerPage);
+
   if (view === 'payment') {
       return <PaymentCheckout onBack={() => setView('dashboard')} onSuccess={handlePaymentSuccess} {...paymentDetails} />
   }
-
-  const filteredCoaches = coaches.filter(coach => {
-    // This filtering logic can be improved based on new requirements if any
-    return true;
-  });
 
   return (
     <div className="p-8 bg-gray-50 min-h-screen">
@@ -190,13 +203,20 @@ const MarketplaceDashboard = () => {
                 <button onClick={clearFilters} className="text-sm text-blue-600 hover:underline mt-4">Clear all filters</button>
                 </div>
         
-                <div className="w-3/4">
-                <div className="text-gray-600 mb-4">Showing {filteredCoaches.length} coaches</div>
+                <div className="w-3/4" ref={resultsRef}>
+                <div className="text-gray-600 mb-4">Showing {filteredCoaches.length} coaches. Page {currentPage} of {totalPages}</div>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    {filteredCoaches.map(coach => (
+                    {paginatedCoaches.map(coach => (
                     <CoachCard key={coach.id} coach={coach} onSelect={handleCoachSelect} />
                     ))}
                 </div>
+                {totalPages > 1 && (
+                    <Pagination 
+                        currentPage={currentPage}
+                        totalPages={totalPages}
+                        onPageChange={setCurrentPage}
+                    />
+                )}
                 </div>
             </div>
         </>
