@@ -110,7 +110,7 @@ export default function Dashboard() {
 
         <div className="mt-8">
           <button
-            onClick={() => {}}
+            onClick={() => navigate('/coach-marketplace/browse')}
             className="w-full bg-gradient-to-br from-violet-500 to-purple-600 rounded-2xl p-6 shadow-card hover:shadow-card-hover transition-all text-left group"
           >
             <div className="flex items-center justify-between">

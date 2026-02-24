@@ -16,6 +16,13 @@ import ApplicationMaterialsDashboard from './components/application/ApplicationM
 import ApplicationSectionPage from './components/application/ApplicationSectionPage';
 import InterviewPrepPage from './components/interview/InterviewPrepPage';
 import ApplicationPlanPage from './components/plan/ApplicationPlanPage';
+import CoachMarketplace from './pages/CoachMarketplace';
+import MarketplaceDashboard from './pages/coach/MarketplaceDashboard';
+import MessageInbox from './pages/coach/MessageInbox';
+import PaymentCheckout from './pages/coach/PaymentCheckout';
+import CoachHistory from './pages/coach/CoachHistory';
+import CoachDashboard from './pages/coach/CoachDashboard';
+import CoachConversation from './components/coach/CoachConversation';
 
 function App() {
   return (
@@ -38,6 +45,14 @@ function App() {
             <Route path="/application/:sectionId" element={<ApplicationSectionPage />} />
             <Route path="/interview" element={<InterviewPrepPage />} />
             <Route path="/plan" element={<ApplicationPlanPage />} />
+            <Route path="/coach-marketplace" element={<CoachMarketplace />}>
+              <Route path="browse" element={<MarketplaceDashboard />} />
+              <Route path="messages" element={<MessageInbox />} />
+              <Route path="checkout" element={<PaymentCheckout />} />
+              <Route path="history" element={<CoachHistory />} />
+            </Route>
+            <Route path="/coach/dashboard" element={<CoachDashboard />} />
+            <Route path="/coach/conversation/:id" element={<CoachConversation />} />
           </Routes>
           <UserToggle />
         </div>
