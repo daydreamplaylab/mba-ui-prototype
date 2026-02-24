@@ -4,7 +4,7 @@ export default function UserToggle() {
   const { isPaidUser, setIsPaidUser } = useUser();
 
   return (
-    <div className="fixed bottom-6 right-6 z-50 bg-white rounded-xl shadow-lg border border-gray-200 p-4">
+    <div className="fixed bottom-6 left-6 z-50 bg-white rounded-xl shadow-lg border border-gray-200 p-4">
       <div className="flex items-center gap-3">
         <span className={`text-sm font-medium ${!isPaidUser ? 'text-purple-600' : 'text-gray-400'}`}>
           Free User
