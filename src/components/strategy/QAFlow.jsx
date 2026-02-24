@@ -72,14 +72,20 @@ export default function QAFlow({
         <div className="grid grid-cols-12 gap-6">
           <div className="col-span-4">
             <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-              {currentQuestion.acknowledgment && (
-                <p className="text-sm text-gray-500 mb-3 leading-relaxed">
-                  {currentQuestion.acknowledgment}
-                </p>
+              {currentQuestion.acknowledgment ? (
+                <div className="space-y-3">
+                  <p className="text-sm text-gray-800 leading-relaxed">
+                    {currentQuestion.acknowledgment}
+                  </p>
+                  <p className="text-sm text-gray-800 font-medium pt-3 border-t border-gray-100">
+                    {currentQuestion.question}
+                  </p>
+                </div>
+              ) : (
+                <h2 className="text-lg font-normal text-gray-900">
+                  {currentQuestion.question}
+                </h2>
               )}
-              <h2 className="text-lg font-normal text-gray-900">
-                {currentQuestion.question}
-              </h2>
             </div>
           </div>
 

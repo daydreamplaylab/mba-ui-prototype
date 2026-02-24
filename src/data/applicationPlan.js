@@ -24,8 +24,8 @@ export const applicationPlanData = {
       id: 'build-stories',
       name: 'Build Your Stories',
       tasks: [
-        { id: 'stories-1', name: 'Complete career vision', link: { text: 'Go to Strategy', url: '/' } },
-        { id: 'stories-2', name: 'Complete "Why MBA" narrative', link: { text: 'Go to Strategy', url: '/' } },
+        { id: 'stories-1', name: 'Complete career vision', link: { text: 'Go to Strategy', url: '/strategy' } },
+        { id: 'stories-2', name: 'Complete "Why MBA" narrative', link: { text: 'Go to Strategy', url: '/strategy' } },
         { id: 'stories-3', name: 'Build story bank', link: { text: 'Go to Build Your Stories', url: '/stories' } },
       ]
     },

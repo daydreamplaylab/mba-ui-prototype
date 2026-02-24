@@ -11,14 +11,29 @@ export default function StrategyDashboard() {
   const [partACompleted, setPartACompleted] = useState(() => {
     return localStorage.getItem('offerland_part_a_completed') === 'true';
   });
+  const [partBCompleted, setPartBCompleted] = useState(() => {
+    return localStorage.getItem('offerland_part_b_completed') === 'true';
+  });
+  const [partCCompleted, setPartCCompleted] = useState(() => {
+    return localStorage.getItem('offerland_part_c_completed') === 'true';
+  });
+  const [partDCompleted, setPartDCompleted] = useState(() => {
+    return localStorage.getItem('offerland_part_d_completed') === 'true';
+  });
 
   useEffect(() => {
     const stored = localStorage.getItem('offerland_part_a_completed') === 'true';
     setPartACompleted(stored);
+    setPartBCompleted(localStorage.getItem('offerland_part_b_completed') === 'true');
+    setPartCCompleted(localStorage.getItem('offerland_part_c_completed') === 'true');
+    setPartDCompleted(localStorage.getItem('offerland_part_d_completed') === 'true');
   }, []);
 
   const getStatus = (partId) => {
     if (partId === 'part-a' && partACompleted) return 'completed';
+    if (partId === 'part-b' && partBCompleted) return 'completed';
+    if (partId === 'part-c' && partCCompleted) return 'completed';
+    if (partId === 'part-d' && partDCompleted) return 'completed';
     const progress = categoryProgress[`strategy_${partId}`];
     if (progress === 'completed') return 'completed';
     if (progress === 'in_progress') return 'in_progress';
@@ -30,7 +45,10 @@ export default function StrategyDashboard() {
   };
 
   const handlePartClick = (partId) => {
-    if (!isPaidUser) return;
+    if (!isPaidUser) {
+      navigate('/pricing');
+      return;
+    }
     switch(partId) {
       case 'part-b':
         navigate('/strategy/part-b-intro');
@@ -113,7 +131,10 @@ export default function StrategyDashboard() {
                 {isLocked && (
                   <div className="absolute inset-0 bg-white/40 backdrop-blur-[1px] z-10 flex flex-col items-center justify-center">
                     <Lock size={24} className="text-gray-400 mb-1" />
-                    <p className="text-gray-500 text-xs">Upgrade to unlock</p>
+                    <p className="text-gray-500 text-xs mb-2">Upgrade to unlock</p>
+                    <button className="px-4 py-2 bg-purple-600 text-white text-xs font-medium rounded-lg">
+                      Upgrade Now
+                    </button>
                   </div>
                 )}
                 

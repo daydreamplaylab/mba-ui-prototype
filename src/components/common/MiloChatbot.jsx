@@ -260,8 +260,10 @@ export default function MiloChatbot() {
               </div>
               
               {!isPaidUser && (
-                <p className="text-xs text-gray-400 mt-2 text-center">
-                  {messageCount}/5 messages sent
+                <p className={`text-xs mt-2 text-center font-medium ${
+                  messageCount >= 4 ? 'text-red-500' : messageCount >= 3 ? 'text-yellow-500' : 'text-gray-500'
+                }`}>
+                  {messageCount >= 5 ? 'Message limit reached. Upgrade to continue.' : `${messageCount}/5 messages sent`}
                 </p>
               )}
             </div>

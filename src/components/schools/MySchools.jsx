@@ -75,7 +75,10 @@ export default function MySchools() {
               <div key={school.id} className="relative group">
                 <SchoolCard 
                   school={school}
-                  onClick={() => navigate(`/schools/${school.id}`)}
+                  onClick={() => {
+                    sessionStorage.setItem('schoolDetailReferrer', '/my-schools');
+                    navigate(`/schools/${school.id}`);
+                  }}
                   showRemove={true} // Always show heart/remove button
                 />
                 {isEditMode && (

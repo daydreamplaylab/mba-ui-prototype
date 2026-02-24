@@ -67,6 +67,7 @@ export default function SchoolList() {
   }, [filters, searchQuery]);
 
   const handleSchoolClick = (school) => {
+    sessionStorage.setItem('schoolDetailReferrer', '/schools');
     if (isPaidUser || viewedSchools.includes(school.id)) {
       navigate(`/schools/${school.id}`);
       return;
@@ -86,6 +87,7 @@ export default function SchoolList() {
     if (pendingSchool) {
       setShowPopup(false);
       setFlippingCardKey(prev => prev + 1);
+      sessionStorage.setItem('schoolDetailReferrer', '/schools');
       navigate(`/schools/${pendingSchool.id}`);
     }
   };

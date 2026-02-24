@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 import { strategyData } from '../../data/strategy';
@@ -10,6 +10,10 @@ export default function PartDResults() {
   const [showTips, setShowTips] = useState(false);
 
   const { summary } = strategyData.partD.results;
+
+  useEffect(() => {
+    localStorage.setItem('offerland_part_d_completed', 'true');
+  }, []);
 
   const handleStartOver = () => {
     setShowStartOver(true);

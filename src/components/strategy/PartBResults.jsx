@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 import { strategyData } from '../../data/strategy';
@@ -10,6 +10,10 @@ export default function PartBResults() {
   const [showStartOver, setShowStartOver] = useState(false);
 
   const { strengths, weaknesses } = strategyData.partB.results;
+
+  useEffect(() => {
+    localStorage.setItem('offerland_part_b_completed', 'true');
+  }, []);
 
   const toggleExpand = (index) => {
     setExpandedItems(prev => ({ ...prev, [index]: !prev[index] }));

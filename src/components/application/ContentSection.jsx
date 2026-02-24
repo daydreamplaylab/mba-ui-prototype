@@ -1,26 +1,29 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { ChevronDown, ChevronUp, Lock, Check } from 'lucide-react';
 import { useUser } from '../../context/useUser';
-import UpgradePrompt from '../common/UpgradePrompt';
 
 export default function ContentSection({ title, topics, sectionKey, onMarkComplete }) {
+  const navigate = useNavigate();
   const { isPaidUser } = useUser();
   const [expandedTopics, setExpandedTopics] = useState({ 0: true });
-  const [showUpgradePrompt, setShowUpgradePrompt] = useState(false);
+  const [isCompleted, setIsCompleted] = useState(false);
 
   const toggleTopic = (index) => {
     setExpandedTopics(prev => ({ ...prev, [index]: !prev[index] }));
   };
 
-  const handleUpgradeClick = () => {
-    setShowUpgradePrompt(true);
-  };
-
   const handleMarkComplete = (completed) => {
+    if (completed) {
+      setIsCompleted(true);
+    }
     if (onMarkComplete) {
       onMarkComplete(completed);
     }
+  };
+
+  const handleUpgradeClick = () => {
+    navigate('/pricing');
   };
 
   return (
@@ -103,20 +106,22 @@ export default function ContentSection({ title, topics, sectionKey, onMarkComple
       <div className="mt-6 flex justify-end">
         <button
           onClick={() => handleMarkComplete(true)}
-          className="flex items-center gap-2 px-6 py-2.5 rounded-lg text-sm font-normal bg-gray-100 text-gray-600 border border-gray-200 hover:bg-gray-200 transition-colors"
+          className={`flex items-center gap-2 px-6 py-2.5 rounded-lg text-sm font-normal transition-colors ${
+            isCompleted 
+              ? 'bg-green-100 text-green-700 border border-green-200'
+              : 'bg-gray-100 text-gray-600 border border-gray-200 hover:bg-gray-200'
+          }`}
         >
-          Mark as Complete
+          {isCompleted ? (
+            <>
+              <Check size={16} />
+              Completed
+            </>
+          ) : (
+            'Mark as Complete'
+          )}
         </button>
       </div>
-
-      {showUpgradePrompt && (
-        <UpgradePrompt
-          title="Unlock All Content"
-          message="Upgrade to access all topics and get unlimited access to Application Materials."
-          onUpgrade={() => window.location.href = '/pricing'}
-          onClose={() => setShowUpgradePrompt(false)}
-        />
-      )}
     </div>
   );
 }

@@ -1,8 +1,10 @@
 import { X } from 'lucide-react';
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useUser } from '../../context/useUser';
 
 export default function PromotionBar() {
+  const navigate = useNavigate();
   const { isPaidUser } = useUser();
   const [dismissed, setDismissed] = useState(false);
 
@@ -12,7 +14,10 @@ export default function PromotionBar() {
     <div className="bg-gray-900 text-white text-xs py-1.5 px-4 relative">
       <div className="max-w-7xl mx-auto flex items-center justify-center gap-2">
         <span className="font-normal">Unlock full access to all schools & get personalized recommendations</span>
-        <button className="ml-4 px-3 py-1 border border-white/30 text-white rounded-full text-xs font-normal hover:bg-white/10 transition-colors">
+        <button 
+          onClick={() => navigate('/pricing')}
+          className="ml-4 px-3 py-1 border border-white/30 text-white rounded-full text-xs font-normal hover:bg-white/10 transition-colors"
+        >
           Upgrade Now
         </button>
       </div>

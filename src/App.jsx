@@ -12,6 +12,7 @@ import SchoolDetail from './components/schools/SchoolDetail';
 import MySchools from './components/schools/MySchools';
 import Pricing from './pages/Pricing';
 import PaymentPage from './pages/PaymentPage';
+import CoachesPage from './pages/CoachesPage';
 import ProfilePage from './pages/ProfilePage';
 import StoriesDashboard from './components/stories/StoriesDashboard';
 import BrainstormPage from './components/stories/BrainstormPage';
@@ -84,6 +85,14 @@ function App() {
           } />
           <Route path="/payment" element={
             <PaymentPage />
+          } />
+          <Route path="/coaches" element={
+            <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-violet-50">
+              <PromotionBar />
+              <Navbar />
+              <CoachesPage />
+              <UserToggle />
+            </div>
           } />
           <Route path="/profile" element={
             <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-violet-50">

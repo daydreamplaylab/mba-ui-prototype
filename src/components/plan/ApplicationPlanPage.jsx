@@ -114,6 +114,9 @@ export default function ApplicationPlanPage() {
   };
 
   const handleDeleteTask = (categoryId, taskId) => {
+    if (!window.confirm('Are you sure you want to delete this task?')) {
+      return;
+    }
     const newTasks = { ...customTasks };
     newTasks[categoryId] = newTasks[categoryId].filter(t => t.id !== taskId);
     setCustomTasks(newTasks);
