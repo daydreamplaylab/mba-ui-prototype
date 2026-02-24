@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ChevronDown, ChevronUp, Lock, Check, Plus, X, Pencil, Trash2 } from 'lucide-react';
 import { useUser } from '../../context/useUser';
 import { applicationPlanData } from '../../data/applicationPlan';
@@ -29,6 +29,7 @@ export default function ApplicationPlanPage() {
   const [editingTask, setEditingTask] = useState(null);
   const [editTaskName, setEditTaskName] = useState('');
   const [showUpgradePrompt, setShowUpgradePrompt] = useState(false);
+  const [celebratingCategories, setCelebratingCategories] = useState({});
 
   const toggleCategory = (categoryId) => {
     setExpandedCategories(prev => ({ ...prev, [categoryId]: !prev[categoryId] }));
@@ -39,6 +40,7 @@ export default function ApplicationPlanPage() {
       setShowUpgradePrompt(true);
       return;
     }
+    const wasCompleted = completedTasks[taskId];
     const newCompleted = { ...completedTasks, [taskId]: !completedTasks[taskId] };
     setCompletedTasks(newCompleted);
     localStorage.setItem('offerland_completed_tasks', JSON.stringify(newCompleted));
@@ -81,6 +83,18 @@ export default function ApplicationPlanPage() {
     
     return { completed, total };
   };
+
+  useEffect(() => {
+    applicationPlanData.categories.forEach(category => {
+      const progress = getCategoryProgress(category);
+      if (progress.completed === progress.total && progress.total > 0 && !celebratingCategories[category.id]) {
+        setCelebratingCategories(prev => ({ ...prev, [category.id]: true }));
+        setTimeout(() => {
+          setCelebratingCategories(prev => ({ ...prev, [category.id]: false }));
+        }, 500);
+      }
+    });
+  }, [completedTasks, customTasks]);
 
   const handleAddTask = (categoryId) => {
     if (!newTaskName[categoryId]?.trim()) return;
@@ -130,6 +144,12 @@ export default function ApplicationPlanPage() {
     setEditTaskName('');
   };
 
+  const handleLinkClick = (e, url) => {
+    e.preventDefault();
+    e.stopPropagation();
+    window.open(url, '_blank');
+  };
+
   const renderTask = (task, categoryId, isCustom = false) => {
     const isCompleted = completedTasks[task.id];
     const isEditing = editingTask === task.id;
@@ -156,19 +176,25 @@ export default function ApplicationPlanPage() {
               className="flex-1 px-2 py-1 border border-gray-200 rounded text-sm focus:outline-none focus:ring-2 focus:ring-purple-500/20"
               autoFocus
               onKeyDown={(e) => {
-                if (e.key === 'Enter') handleSaveEdit(categoryId, taskId);
-                if (e.key === 'Escape') setEditingTask(null);
+                if (e.key === 'Enter') handleSaveEdit(categoryId, task.id);
+                if (e.key === 'Escape') {
+                  setEditingTask(null);
+                  setEditTaskName('');
+                }
               }}
             />
             <button 
-              onClick={() => handleSaveEdit(categoryId, taskId)}
-              className="text-purple-600 hover:text-purple-700"
+              onClick={() => handleSaveEdit(categoryId, task.id)}
+              className="px-3 py-1.5 bg-purple-500 text-white rounded-lg text-sm hover:bg-purple-600"
             >
-              <Check size={14} />
+              Save
             </button>
             <button 
-              onClick={() => setEditingTask(null)}
-              className="text-gray-400 hover:text-gray-600"
+              onClick={() => {
+                setEditingTask(null);
+                setEditTaskName('');
+              }}
+              className="p-1.5 text-gray-400 hover:text-gray-600"
             >
               <X size={14} />
             </button>
@@ -180,10 +206,9 @@ export default function ApplicationPlanPage() {
             </span>
             {task.link && (
               <a 
-                href={task.link.url} 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="text-xs text-purple-600 hover:text-purple-700"
+                href={task.link.url}
+                onClick={(e) => handleLinkClick(e, task.link.url)}
+                className="text-xs text-purple-600 hover:text-purple-700 cursor-pointer"
               >
                 → {task.link.text}
               </a>
@@ -248,9 +273,14 @@ export default function ApplicationPlanPage() {
           {applicationPlanData.categories.map((category) => {
             const isExpanded = expandedCategories[category.id];
             const progress = getCategoryProgress(category);
+            const isAllComplete = progress.completed === progress.total && progress.total > 0;
+            const isCelebrating = celebratingCategories[category.id];
             
             return (
-              <div key={category.id} className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+              <div 
+                key={category.id} 
+                className={`bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden transition-colors duration-300 ${isCelebrating ? 'border-green-300 bg-green-50/50' : ''}`}
+              >
                 <button
                   onClick={() => toggleCategory(category.id)}
                   className="w-full px-6 py-4 flex items-center justify-between text-left hover:bg-gray-50 transition-colors"
@@ -259,10 +289,16 @@ export default function ApplicationPlanPage() {
                     <span className="font-normal text-gray-900">{category.name}</span>
                   </div>
                   <div className="flex items-center gap-3">
-                    {isPaidUser && isExpanded !== true && (
-                      <span className="text-xs text-gray-400">
-                        {progress.completed}/{progress.total} complete
-                      </span>
+                    {isPaidUser && !isExpanded && (
+                      isAllComplete ? (
+                        <span className="flex items-center gap-1 text-xs text-green-600">
+                          <Check size={14} style={{ animation: 'scale-in 0.3s ease-out' }} />
+                        </span>
+                      ) : (
+                        <span className="text-xs text-gray-400">
+                          {progress.completed}/{progress.total} complete
+                        </span>
+                      )
                     )}
                     {isExpanded ? (
                       <ChevronUp size={18} className="text-gray-400" />
@@ -328,13 +364,12 @@ export default function ApplicationPlanPage() {
                     </div>
 
                     {!isPaidUser && (
-                      <div className="absolute inset-0 bg-white/60 flex flex-col items-center justify-center z-10">
-                        <Lock size={32} className="text-gray-400 mb-2" />
-                        <p className="text-gray-600 font-medium text-sm mb-1">Unlock tasks</p>
-                        <p className="text-gray-500 text-xs mb-3">Upgrade to check off tasks</p>
+                      <div className="absolute inset-0 bg-white/60 flex flex-col items-center justify-center z-10" style={{ minHeight: '120px' }}>
+                        <Lock size={24} className="text-gray-400 mb-1" />
+                        <p className="text-gray-500 text-xs mb-2">Upgrade to check off tasks</p>
                         <button 
                           onClick={() => setShowUpgradePrompt(true)}
-                          className="px-4 py-2 bg-purple-500 text-white rounded-lg text-sm hover:bg-purple-600 transition-colors"
+                          className="px-3 py-1.5 bg-purple-500 text-white rounded-lg text-xs hover:bg-purple-600 transition-colors"
                         >
                           Upgrade to Unlock
                         </button>

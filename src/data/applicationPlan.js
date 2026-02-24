@@ -16,8 +16,8 @@ export const applicationPlanData = {
       name: 'Research Your Schools',
       tasks: [
         { id: 'research-1', name: 'Finalize school list', link: { text: 'Go to School Selection', url: '/schools' } },
-        { id: 'research-2', name: "Research each school's essay prompts", link: null },
-        { id: 'research-3', name: 'Note application deadlines', link: null },
+        { id: 'research-2', name: "Research each school's essay prompts", link: { text: 'Go to School Selection', url: '/schools' } },
+        { id: 'research-3', name: 'Note application deadlines', link: { text: 'Go to School Selection', url: '/schools' } },
       ]
     },
     {
@@ -33,12 +33,12 @@ export const applicationPlanData = {
       id: 'prepare-materials',
       name: 'Prepare Your Materials',
       tasks: [
-        { id: 'materials-1', name: 'Draft resume', link: { text: 'Go to Application Materials', url: '/application' } },
-        { id: 'materials-2', name: 'Finalize resume', link: { text: 'Go to Application Materials', url: '/application' } },
+        { id: 'materials-1', name: 'Draft resume', link: { text: 'Go to Resume Tips', url: '/application/resume' } },
+        { id: 'materials-2', name: 'Finalize resume', link: { text: 'Go to Resume Tips', url: '/application/resume' } },
         { id: 'materials-3', name: 'Identify recommenders', link: null },
         { id: 'materials-4', name: 'Brief recommenders', link: null },
-        { id: 'materials-5', name: 'Draft essays', link: { text: 'Go to Application Materials', url: '/application' } },
-        { id: 'materials-6', name: 'Finalize essays', link: { text: 'Go to Application Materials', url: '/application' } },
+        { id: 'materials-5', name: 'Draft essays', link: { text: 'Go to Essay Guidance', url: '/application/essay' } },
+        { id: 'materials-6', name: 'Finalize essays', link: { text: 'Go to Essay Guidance', url: '/application/essay' } },
       ]
     },
     {

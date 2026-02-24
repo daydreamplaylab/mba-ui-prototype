@@ -115,7 +115,7 @@ export function UserProvider({ children }) {
     setStories(newStories);
     localStorage.setItem('offerland_stories', JSON.stringify(newStories));
     
-    if (story.categoryId && !categories.find(c => c.id === story.categoryId) && !customCategories.includes(story.categoryId)) {
+    if (story.categoryId && !customCategories.includes(story.categoryId)) {
       const newCategories = [...customCategories, story.categoryId];
       setCustomCategories(newCategories);
       localStorage.setItem('offerland_custom_categories', JSON.stringify(newCategories));

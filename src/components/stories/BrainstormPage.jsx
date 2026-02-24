@@ -398,42 +398,46 @@ export default function BrainstormPage() {
                   )}
 
                   <div className="flex justify-between pt-4 border-t border-gray-100">
-                    <button 
-                      onClick={handleStartOver}
-                      className="flex items-center gap-2 px-4 py-2 text-sm text-gray-500 hover:text-gray-700"
-                    >
-                      <RotateCcw size={16} />
-                      Start Over
-                    </button>
-                    
-                    <div className="flex gap-3">
-                      <button 
-                        onClick={handleSaveAndAddAnother}
-                        disabled={!canSaveStory() || !isPaidUser}
-                        className={`flex items-center gap-2 px-4 py-2 border border-gray-200 rounded-lg text-sm text-gray-600 hover:bg-gray-50 ${
-                          !canSaveStory() || !isPaidUser ? 'opacity-50 cursor-not-allowed' : ''
-                        }`}
-                      >
-                        {!isPaidUser && <Lock size={14} className="text-gray-400" />}
-                        <Plus size={16} />
-                        Save & Add Another
-                      </button>
-                      <button 
-                        onClick={handleSaveAndNext}
-                        disabled={!canSaveStory()}
-                        className={`flex items-center gap-2 px-6 py-2.5 rounded-lg text-sm font-normal transition-colors ${
-                          canSaveStory()
-                            ? 'bg-purple-500 text-white hover:bg-purple-600'
-                            : 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                        }`}
-                      >
-                        {questionIndex < categoryQuestions.length - 1 ? 'Save & Next Question' : 'Save & Complete'}
-                        <ArrowRight size={16} />
-                      </button>
-                    </div>
+                    {activeTab !== 'draft' && (
+                      <>
+                        <button 
+                          onClick={handleStartOver}
+                          className="flex items-center gap-2 px-4 py-2 text-sm text-gray-500 hover:text-gray-700"
+                        >
+                          <RotateCcw size={16} />
+                          Start Over
+                        </button>
+                        
+                        <div className="flex gap-3">
+                          <button 
+                            onClick={handleSaveAndAddAnother}
+                            disabled={!canSaveStory() || !isPaidUser}
+                            className={`flex items-center gap-2 px-4 py-2 border border-gray-200 rounded-lg text-sm text-gray-600 hover:bg-gray-50 ${
+                              !canSaveStory() || !isPaidUser ? 'opacity-50 cursor-not-allowed' : ''
+                            }`}
+                          >
+                            {!isPaidUser && <Lock size={14} className="text-gray-400" />}
+                            <Plus size={16} />
+                            Save & Add Another
+                          </button>
+                          <button 
+                            onClick={handleSaveAndNext}
+                            disabled={!canSaveStory()}
+                            className={`flex items-center gap-2 px-6 py-2.5 rounded-lg text-sm font-normal transition-colors ${
+                              canSaveStory()
+                                ? 'bg-purple-500 text-white hover:bg-purple-600'
+                                : 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                            }`}
+                          >
+                            {questionIndex < categoryQuestions.length - 1 ? 'Save & Next Question' : 'Save & Complete'}
+                            <ArrowRight size={16} />
+                          </button>
+                        </div>
+                      </>
+                    )}
                   </div>
 
-                  {!canSaveStory() && !isPaidUser && (
+                  {!canSaveStory() && !isPaidUser && activeTab !== 'draft' && (
                     <p className="text-xs text-red-500 mt-2 text-center">
                       You've reached the free story limit. Upgrade to save more.
                     </p>
