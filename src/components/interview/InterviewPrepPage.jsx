@@ -65,7 +65,7 @@ export default function InterviewPrepPage() {
         <div className="bg-purple-50 rounded-2xl p-6 mb-8 border border-purple-100">
           <p className="text-purple-800">
             When you're ready for mock interviews and school-specific questions, our coaches can help.{' '}
-            <a href="/coaches" className="underline hover:text-purple-900">Browse coaches</a>
+            <a href="/coach-marketplace/browse" className="underline hover:text-purple-900">Browse coaches</a>
           </p>
         </div>
 
@@ -229,7 +229,7 @@ export default function InterviewPrepPage() {
             You've got the fundamentals. For school-specific questions, mock practice, and real feedback, connect with a coach.
           </p>
           <button 
-            onClick={() => navigate('/coaches')}
+            onClick={() => navigate('/coach-marketplace/browse')}
             className="inline-flex items-center gap-2 px-6 py-3 bg-purple-500 text-white rounded-lg hover:bg-purple-600 transition-colors"
           >
             Get Personalized Prep

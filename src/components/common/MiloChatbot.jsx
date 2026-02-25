@@ -157,7 +157,7 @@ export default function MiloChatbot() {
   };
 
   const handleCoachClick = () => {
-    window.open('/coaches', '_blank');
+    window.open('/coach-marketplace/browse', '_blank');
   };
 
   return (
