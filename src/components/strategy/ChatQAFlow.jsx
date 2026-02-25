@@ -71,7 +71,7 @@ export default function ChatQAFlow({
   return (
     <div className="min-h-screen pb-20">
       <div className="max-w-4xl mx-auto px-6 py-8">
-        <BackButton to={backUrl}>← Back</BackButton>
+        <BackButton to={backUrl}>Back</BackButton>
 
         <div className="mt-6">
           <div className="flex items-center justify-between mb-2">

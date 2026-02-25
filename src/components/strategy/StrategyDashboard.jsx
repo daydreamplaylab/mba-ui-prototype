@@ -41,7 +41,11 @@ export default function StrategyDashboard() {
   };
 
   const handlePartAClick = () => {
-    navigate('/strategy/part-a-welcome');
+    if (partACompleted) {
+      navigate('/strategy/part-a-results');
+    } else {
+      navigate('/strategy/part-a-welcome');
+    }
   };
 
   const handlePartClick = (partId) => {
@@ -49,6 +53,20 @@ export default function StrategyDashboard() {
       navigate('/pricing');
       return;
     }
+    
+    if (partId === 'part-b' && partBCompleted) {
+      navigate('/strategy/part-b-results');
+      return;
+    }
+    if (partId === 'part-c' && partCCompleted) {
+      navigate('/strategy/part-c-results');
+      return;
+    }
+    if (partId === 'part-d' && partDCompleted) {
+      navigate('/strategy/part-d-results');
+      return;
+    }
+    
     switch(partId) {
       case 'part-b':
         navigate('/strategy/part-b-intro');
@@ -65,7 +83,7 @@ export default function StrategyDashboard() {
   return (
     <div className="min-h-screen pb-20">
       <div className="max-w-6xl mx-auto px-6 py-8">
-        <BackButton to="/dashboard">← Back to Dashboard</BackButton>
+        <BackButton to="/dashboard">Back to Dashboard</BackButton>
 
         <div className="mb-8 mt-4">
           <h1 className="text-4xl font-light text-gray-900 mb-2 tracking-tight">

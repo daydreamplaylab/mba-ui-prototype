@@ -20,7 +20,7 @@ export default function MySchools() {
     <div className="min-h-screen">
       <div className="max-w-7xl mx-auto px-6 py-8">
         <div className="flex items-center justify-between mb-8">
-          <BackButton to="/schools">← Back to Schools</BackButton>
+          <BackButton to="/schools">Back to Schools</BackButton>
           
           {savedSchools.length > 0 && (
             <div className="flex gap-3">

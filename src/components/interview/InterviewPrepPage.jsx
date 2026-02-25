@@ -51,7 +51,7 @@ export default function InterviewPrepPage() {
   return (
     <div className="min-h-screen pb-20">
       <div className="max-w-6xl mx-auto px-6 py-8">
-        <BackButton to="/dashboard">← Back to Dashboard</BackButton>
+        <BackButton to="/dashboard">Back to Dashboard</BackButton>
 
         <div className="mb-8 mt-4">
           <h1 className="text-4xl font-light text-gray-900 mb-4 tracking-tight">

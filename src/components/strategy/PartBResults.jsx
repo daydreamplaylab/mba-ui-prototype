@@ -26,7 +26,7 @@ export default function PartBResults() {
   return (
     <div className="min-h-screen pb-20">
       <div className="max-w-6xl mx-auto px-6 py-8">
-        <BackButton to="/strategy">← Back to Strategy</BackButton>
+        <BackButton to="/strategy">Back to Strategy</BackButton>
 
         <div className="mt-8">
           <h1 className="text-3xl font-light text-gray-900 mb-8 tracking-tight">
@@ -115,7 +115,7 @@ export default function PartBResults() {
             <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
               <div className="bg-white rounded-2xl p-6 max-w-md mx-4">
                 <p className="text-gray-700 mb-4">
-                  Start Over feature coming soon. If you have any considerations, please email us at support@example.com
+                  Start Over feature coming soon. If you have any considerations, please email us at support@offerland.com
                 </p>
                 <button 
                   onClick={() => setShowStartOver(false)}

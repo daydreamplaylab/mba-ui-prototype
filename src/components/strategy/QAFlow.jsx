@@ -53,7 +53,7 @@ export default function QAFlow({
   return (
     <div className="min-h-screen pb-20">
       <div className="max-w-6xl mx-auto px-6 py-8">
-        <BackButton to={backUrl || '/strategy'}>← Back</BackButton>
+        <BackButton to={backUrl || '/strategy'}>Back</BackButton>
 
         <div className="mt-6">
           <div className="flex items-center justify-between mb-2">

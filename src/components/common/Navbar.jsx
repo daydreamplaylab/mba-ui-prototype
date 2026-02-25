@@ -16,7 +16,8 @@ export default function Navbar() {
   const isInterviewPage = location.pathname.startsWith('/interview');
   const isPlanPage = location.pathname.startsWith('/plan');
   const isDashboardPage = location.pathname === '/dashboard';
-  const showViewsDisplay = !isPaidUser && !isStrategyPage && !isApplicationPage && !isInterviewPage && !isPlanPage && !isDashboardPage;
+  const isPricingPage = location.pathname === '/pricing' || location.pathname === '/payment';
+  const showViewsDisplay = !isPaidUser && !isStrategyPage && !isApplicationPage && !isInterviewPage && !isPlanPage && !isDashboardPage && !isPricingPage;
   const displayText = isStoriesPage ? getUsedStoriesDisplay() : getUsedViewsDisplay();
 
   useEffect(() => {

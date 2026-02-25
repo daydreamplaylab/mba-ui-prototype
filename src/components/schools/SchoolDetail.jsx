@@ -107,7 +107,7 @@ export default function SchoolDetail() {
 
       <div className="max-w-5xl mx-auto px-6 py-8 relative">
         <BackButton to={fromPath}>
-          {fromPath === '/my-schools' ? '← Back to My Schools' : '← Back to Schools'}
+          {fromPath === '/my-schools' ? 'Back to My Schools' : 'Back to Schools'}
         </BackButton>
 
         <div className={`bg-white rounded-3xl shadow-float overflow-hidden transition-all duration-500 ${isLocked ? 'blur-[4px] select-none pointer-events-none' : ''}`}>
