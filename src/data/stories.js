@@ -23,18 +23,6 @@ export const categories = [
     description: 'Illustrate your collaborative skills and ability to work with diverse teams.',
     unlocked: false,
   },
-  {
-    id: 'why-mba',
-    name: 'Why MBA',
-    description: 'Explain your motivations for pursuing an MBA and career goals.',
-    unlocked: false,
-  },
-  {
-    id: 'career-vision',
-    name: 'Career Vision',
-    description: 'Articulate your long-term career aspirations and how an MBA fits in.',
-    unlocked: false,
-  },
 ];
 
 export const questions = {

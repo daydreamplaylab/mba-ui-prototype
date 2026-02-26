@@ -10,6 +10,7 @@ export default function InterviewPrepPage() {
   const { categoryProgress, updateCategoryProgress, isPaidUser } = useUser();
   const [expandedSections, setExpandedSections] = useState({});
   const [expandedQuestions, setExpandedQuestions] = useState({});
+  const [completedSections, setCompletedSections] = useState({});
 
   const toggleSection = (sectionKey) => {
     setExpandedSections(prev => ({ ...prev, [sectionKey]: !prev[sectionKey] }));
@@ -22,6 +23,7 @@ export default function InterviewPrepPage() {
 
   const handleMarkComplete = (section) => {
     updateCategoryProgress(`interview_${section}`, 'completed');
+    setCompletedSections(prev => ({ ...prev, [section]: true }));
   };
 
   const renderContent = (content) => {
@@ -49,7 +51,7 @@ export default function InterviewPrepPage() {
   return (
     <div className="min-h-screen pb-20">
       <div className="max-w-6xl mx-auto px-6 py-8">
-        <BackButton to="/dashboard">← Back to Dashboard</BackButton>
+        <BackButton to="/dashboard">Back to Dashboard</BackButton>
 
         <div className="mb-8 mt-4">
           <h1 className="text-4xl font-light text-gray-900 mb-4 tracking-tight">
@@ -63,7 +65,7 @@ export default function InterviewPrepPage() {
         <div className="bg-purple-50 rounded-2xl p-6 mb-8 border border-purple-100">
           <p className="text-purple-800">
             When you're ready for mock interviews and school-specific questions, our coaches can help.{' '}
-            <a href="#" className="underline hover:text-purple-900">Browse coaches</a>
+            <a href="/coach-marketplace/browse" className="underline hover:text-purple-900">Browse coaches</a>
           </p>
         </div>
 
@@ -110,9 +112,20 @@ export default function InterviewPrepPage() {
           <div className="mt-4 flex justify-end">
             <button
               onClick={() => handleMarkComplete('general')}
-              className="flex items-center gap-2 px-6 py-2.5 rounded-lg text-sm font-normal bg-gray-100 text-gray-600 border border-gray-200 hover:bg-gray-200 transition-colors"
+              className={`flex items-center gap-2 px-6 py-2.5 rounded-lg text-sm font-normal transition-colors ${
+                completedSections.general
+                  ? 'bg-green-100 text-green-700 border border-green-200'
+                  : 'bg-gray-100 text-gray-600 border border-gray-200 hover:bg-gray-200'
+              }`}
             >
-              Mark as Complete
+              {completedSections.general ? (
+                <>
+                  <Check size={16} />
+                  Completed
+                </>
+              ) : (
+                'Mark as Complete'
+              )}
             </button>
           </div>
         </div>
@@ -188,9 +201,20 @@ export default function InterviewPrepPage() {
               <div className="mt-4 flex justify-end">
                 <button
                   onClick={() => handleMarkComplete('questions')}
-                  className="flex items-center gap-2 px-6 py-2.5 rounded-lg text-sm font-normal bg-gray-100 text-gray-600 border border-gray-200 hover:bg-gray-200 transition-colors"
+                  className={`flex items-center gap-2 px-6 py-2.5 rounded-lg text-sm font-normal transition-colors ${
+                    completedSections.questions
+                      ? 'bg-green-100 text-green-700 border border-green-200'
+                      : 'bg-gray-100 text-gray-600 border border-gray-200 hover:bg-gray-200'
+                  }`}
                 >
-                  Mark as Complete
+                  {completedSections.questions ? (
+                    <>
+                      <Check size={16} />
+                      Completed
+                    </>
+                  ) : (
+                    'Mark as Complete'
+                  )}
                 </button>
               </div>
             </>
@@ -205,10 +229,10 @@ export default function InterviewPrepPage() {
             You've got the fundamentals. For school-specific questions, mock practice, and real feedback, connect with a coach.
           </p>
           <button 
-            onClick={() => navigate('/pricing')}
+            onClick={() => navigate('/coach-marketplace/browse')}
             className="inline-flex items-center gap-2 px-6 py-3 bg-purple-500 text-white rounded-lg hover:bg-purple-600 transition-colors"
           >
-            Get Personalized Prep → Find a Coach
+            Get Personalized Prep
           </button>
         </div>
       </div>

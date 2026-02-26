@@ -8,7 +8,7 @@ export default function PartDIntro() {
   return (
     <div className="min-h-screen pb-20">
       <div className="max-w-2xl mx-auto px-6 py-8">
-        <BackButton to="/strategy">← Back to Strategy</BackButton>
+        <BackButton to="/strategy">Back to Strategy</BackButton>
 
         <div className="mt-12 text-center">
           <h1 className="text-3xl font-light text-gray-900 mb-4 tracking-tight">

@@ -29,7 +29,7 @@ export default function SignUpPage() {
   };
 
   const handleCreateAccount = () => {
-    if (!name || !email || !password) return;
+    if (!email || !password) return;
     if (!validateEmail(email)) {
       setEmailError('Please enter a valid email address');
       return;

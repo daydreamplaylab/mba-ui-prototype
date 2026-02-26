@@ -174,7 +174,7 @@ export default function BrainstormPage() {
     return (
       <div className="min-h-screen pb-20">
         <div className="max-w-6xl mx-auto px-6 py-8">
-          <BackButton to="/stories">← Back to Build Your Stories</BackButton>
+          <BackButton to="/stories">Back to Build Your Stories</BackButton>
 
           <div className="max-w-3xl mx-auto mt-8">
             <h1 className="text-4xl font-light text-gray-900 mb-4">{category?.name}</h1>
@@ -237,7 +237,7 @@ export default function BrainstormPage() {
   return (
     <div className="min-h-screen pb-20">
       <div className="max-w-6xl mx-auto px-6 py-8">
-        <BackButton to="/stories">← Back to Build Your Stories</BackButton>
+        <BackButton to="/stories">Back to Build Your Stories</BackButton>
 
         <div className="mt-4 mb-8">
           <h1 className="text-3xl font-light text-gray-900">{category?.name}</h1>

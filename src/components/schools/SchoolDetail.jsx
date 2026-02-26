@@ -1,5 +1,5 @@
-import { useEffect, useRef } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useEffect, useRef, useState } from 'react';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { MapPin, Award, Clock, TrendingUp, Users, Briefcase, GraduationCap, Globe, ExternalLink, Heart, Check, Lock, X } from 'lucide-react';
 import { schools } from '../../data/schools';
 import { useUser } from '../../context/useUser';
@@ -23,6 +23,9 @@ const StatItem = ({ icon, label, value }) => {
 export default function SchoolDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
+  const [fromPath, setFromPath] = useState('/schools');
+  
   const { 
     isPaidUser, 
     addViewedSchool, 
@@ -34,6 +37,13 @@ export default function SchoolDetail() {
   } = useUser();
 
   const school = schools.find(s => s.id === parseInt(id));
+
+  useEffect(() => {
+    const prevPath = sessionStorage.getItem('schoolDetailReferrer');
+    if (prevPath && (prevPath === '/my-schools' || prevPath === '/schools')) {
+      setFromPath(prevPath);
+    }
+  }, []);
   
   const canView = school ? canViewSchool(school.id) : true;
   const saved = school ? isSchoolSaved(school.id) : false;
@@ -96,7 +106,9 @@ export default function SchoolDetail() {
       )}
 
       <div className="max-w-5xl mx-auto px-6 py-8 relative">
-        <BackButton to="/schools">← Back to Schools</BackButton>
+        <BackButton to={fromPath}>
+          {fromPath === '/my-schools' ? 'Back to My Schools' : 'Back to Schools'}
+        </BackButton>
 
         <div className={`bg-white rounded-3xl shadow-float overflow-hidden transition-all duration-500 ${isLocked ? 'blur-[4px] select-none pointer-events-none' : ''}`}>
           
@@ -243,6 +255,17 @@ export default function SchoolDetail() {
               <h2 className="text-xl font-semibold text-purple-900 mb-4">Tips for Applying</h2>
               <p className="text-purple-800 leading-relaxed font-light">{school.tips}</p>
             </section>
+
+            <button 
+              onClick={handleSave}
+              className={`w-full py-4 rounded-xl font-medium transition-all ${
+                saved 
+                  ? 'bg-pink-50 text-pink-600 border border-pink-200'
+                  : 'bg-purple-600 text-white hover:bg-purple-700'
+              }`}
+            >
+              {saved ? '✓ Saved to My Schools' : '+ Add to My Schools'}
+            </button>
           </div>
         </div>
       </div>

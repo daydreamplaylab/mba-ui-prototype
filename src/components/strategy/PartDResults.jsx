@@ -1,15 +1,35 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 import { strategyData } from '../../data/strategy';
+import { useUser } from '../../context/useUser';
 import BackButton from '../../components/common/BackButton';
 
 export default function PartDResults() {
   const navigate = useNavigate();
+  const { addStory } = useUser();
   const [showStartOver, setShowStartOver] = useState(false);
   const [showTips, setShowTips] = useState(false);
 
   const { summary } = strategyData.partD.results;
+
+  useEffect(() => {
+    localStorage.setItem('offerland_part_d_completed', 'true');
+    
+    const existingWhyMbaStory = JSON.parse(localStorage.getItem('offerland_stories') || '[]')
+      .find(s => s.categoryId === 'why-mba');
+    
+    if (!existingWhyMbaStory) {
+      const whyMbaStory = {
+        categoryId: 'why-mba',
+        title: 'Why MBA',
+        bullets: summary,
+        origin: 'strategy',
+        dateAdded: new Date().toISOString().split('T')[0]
+      };
+      addStory(whyMbaStory);
+    }
+  }, [summary, addStory]);
 
   const handleStartOver = () => {
     setShowStartOver(true);
@@ -31,7 +51,7 @@ export default function PartDResults() {
   return (
     <div className="min-h-screen pb-20">
       <div className="max-w-4xl mx-auto px-6 py-8">
-        <BackButton to="/strategy">← Back to Strategy</BackButton>
+        <BackButton to="/strategy">Back to Strategy</BackButton>
 
         <div className="mt-8">
           <h1 className="text-3xl font-light text-gray-900 mb-8 tracking-tight">
@@ -132,7 +152,7 @@ export default function PartDResults() {
             <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
               <div className="bg-white rounded-2xl p-6 max-w-md mx-4">
                 <p className="text-gray-700 mb-4">
-                  Start Over feature coming soon. If you have any considerations, please email us at support@example.com
+                  Start Over feature coming soon. If you have any considerations, please email us at support@offerland.com
                 </p>
                 <button 
                   onClick={() => setShowStartOver(false)}

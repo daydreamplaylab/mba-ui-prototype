@@ -44,7 +44,7 @@ export default function ApplicationSectionPage() {
           onClick={() => navigate('/application')}
           className="text-gray-600 hover:text-gray-900 mb-6"
         >
-          ← Back to Application Materials
+          Back to Application Materials
         </button>
 
         <h1 className="text-3xl font-light text-gray-900 mb-8">

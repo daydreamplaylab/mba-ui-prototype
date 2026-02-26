@@ -33,6 +33,13 @@ import PartDResults from './components/strategy/PartDResults';
 import QAFlow from './components/strategy/QAFlow';
 import ChatQAFlow from './components/strategy/ChatQAFlow';
 import { strategyData } from './data/strategy';
+import CoachMarketplace from './pages/CoachMarketplace';
+import MarketplaceDashboard from './pages/coach/MarketplaceDashboard';
+import MessageInbox from './pages/coach/MessageInbox';
+import PaymentCheckout from './pages/coach/PaymentCheckout';
+import CoachHistory from './pages/coach/CoachHistory';
+import CoachDashboard from './pages/coach/CoachDashboard';
+import CoachConversation from './components/coach/CoachConversation';
 
 function App() {
   return (
@@ -290,6 +297,35 @@ function App() {
               <PromotionBar />
               <Navbar />
               <PartDResults />
+              <UserToggle />
+            </div>
+          } />
+          <Route path="/coach-marketplace" element={
+            <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-violet-50">
+              <PromotionBar />
+              <Navbar />
+              <CoachMarketplace />
+              <UserToggle />
+            </div>
+          }>
+            <Route path="browse" element={<MarketplaceDashboard />} />
+            <Route path="messages" element={<MessageInbox />} />
+            <Route path="checkout" element={<PaymentCheckout />} />
+            <Route path="history" element={<CoachHistory />} />
+          </Route>
+          <Route path="/coach/dashboard" element={
+            <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-violet-50">
+              <PromotionBar />
+              <Navbar />
+              <CoachDashboard />
+              <UserToggle />
+            </div>
+          } />
+          <Route path="/coach/conversation/:id" element={
+            <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-violet-50">
+              <PromotionBar />
+              <Navbar />
+              <CoachConversation />
               <UserToggle />
             </div>
           } />

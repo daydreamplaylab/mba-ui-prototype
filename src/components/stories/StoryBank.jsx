@@ -35,8 +35,27 @@ export default function StoryBank() {
   };
 
   const getCategoryName = (categoryId) => {
-    const category = categories.find(c => c.id === categoryId);
-    return category ? category.name : categoryId;
+    const categoryNames = {
+      'leadership': 'Leadership',
+      'impact': 'Impact/Achievement',
+      'failure': 'Failure/Learning',
+      'teamwork': 'Teamwork',
+      'why-mba': 'Why MBA',
+      'career-vision': 'Career Vision'
+    };
+    return categoryNames[categoryId] || categoryId;
+  };
+
+  const getCategoryFilterOptions = () => {
+    const baseCategories = ['all', 'leadership', 'impact', 'failure', 'teamwork'];
+    
+    const hasCareerVision = stories.some(s => s.categoryId === 'career-vision');
+    const hasWhyMba = stories.some(s => s.categoryId === 'why-mba');
+    
+    if (hasCareerVision) baseCategories.push('career-vision');
+    if (hasWhyMba) baseCategories.push('why-mba');
+    
+    return [...baseCategories, ...customCategories];
   };
 
   return (
@@ -64,7 +83,7 @@ export default function StoryBank() {
       )}
 
       <div className="flex gap-2 flex-wrap">
-          {['all', 'leadership', 'impact', 'failure', 'teamwork', 'why-mba', 'career-vision', ...customCategories].map((cat) => (
+          {getCategoryFilterOptions().map((cat) => (
             <button
               key={cat}
               onClick={() => setCategoryFilter(cat)}
@@ -113,14 +132,33 @@ export default function StoryBank() {
                 </div>
               </div>
               
-              <p className="text-xs text-gray-500 line-clamp-2 mb-2">
-                {story.star?.situation || story.userDraft?.substring(0, 100)}
-              </p>
+              {story.categoryId === 'career-vision' || story.categoryId === 'why-mba' ? (
+                <div className="mb-2">
+                  {story.bullets?.slice(0, 2).map((bullet, idx) => (
+                    <p key={idx} className="text-xs text-gray-500 line-clamp-1 mb-1 flex items-start gap-1">
+                      <span className="w-1 h-1 rounded-full bg-purple-400 mt-0.5 flex-shrink-0" />
+                      <span className="line-clamp-1">{bullet}</span>
+                    </p>
+                  ))}
+                  {story.bullets?.length > 2 && (
+                    <p className="text-xs text-gray-400">+{story.bullets.length - 2} more items</p>
+                  )}
+                </div>
+              ) : (
+                <p className="text-xs text-gray-500 line-clamp-2 mb-2">
+                  {story.star?.situation || story.userDraft?.substring(0, 100)}
+                </p>
+              )}
               
-              <div className="flex items-center gap-2 mb-2">
+              <div className="flex items-center gap-2 mb-2 flex-wrap">
                 <span className="px-2 py-0.5 bg-purple-50 text-purple-600 text-xs rounded-full">
                   {getCategoryName(story.categoryId)}
                 </span>
+                {story.origin === 'strategy' && (
+                  <span className="px-2 py-0.5 bg-green-50 text-green-600 text-xs rounded-full">
+                    Completed in Strategy
+                  </span>
+                )}
               </div>
               
               <p className="text-xs text-gray-400">{story.dateAdded}</p>

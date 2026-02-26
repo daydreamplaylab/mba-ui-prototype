@@ -290,16 +290,16 @@ Presented quarterly results to C-suite executives, influencing strategic decisio
 **Short-Answer Questions:** Treat them like mini-essays. Be specific and concise. Every word should count.`
       },
       {
-        title: "Do's and Don'ts",
-        content: `**Do:**
-- Be consistent with your resume
+        title: "Do's",
+        content: `- Be consistent with your resume
 - Proofread multiple times
 - Follow instructions exactly
 - Use the same formatting throughout
-- Leave no required fields blank without reason
-
-**Don't:**
-- Leave fields blank without explanation
+- Leave no required fields blank without reason`
+      },
+      {
+        title: "Don'ts",
+        content: `- Leave fields blank without explanation
 - Contradict information in other parts of your application
 - Rush through the process
 - Use casual language or abbreviations

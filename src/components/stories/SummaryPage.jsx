@@ -15,7 +15,7 @@ export default function SummaryPage() {
   return (
     <div className="min-h-screen pb-20">
       <div className="max-w-6xl mx-auto px-6 py-8">
-        <BackButton to="/stories">← Back to Build Your Stories</BackButton>
+        <BackButton to="/stories">Back to Build Your Stories</BackButton>
 
         <div className="mt-8 max-w-2xl">
           <h1 className="text-3xl font-light text-gray-900 mb-2">{category?.name}</h1>

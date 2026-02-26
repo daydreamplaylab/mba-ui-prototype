@@ -225,7 +225,7 @@ export default function Dashboard() {
         navigate('/plan');
         break;
       case 'coaches':
-        navigate('/coaches');
+        navigate('/coach-marketplace/browse');
         break;
       default:
         break;

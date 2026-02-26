@@ -39,12 +39,14 @@ export default function ChatQAFlow({
 
     if (currentIndex < questions.length - 1) {
       const nextQuestion = questions[currentIndex + 1];
-      const ackText = nextQuestion.acknowledgment 
-        ? `${nextQuestion.acknowledgment} ${nextQuestion.question}`
-        : nextQuestion.question;
       
       setTimeout(() => {
-        setMessages(prev => [...prev, { type: 'ai', content: nextQuestion.question }]);
+        const hasAck = !!nextQuestion.acknowledgment;
+        setMessages(prev => [...prev, { 
+          type: 'ai', 
+          content: nextQuestion.question,
+          acknowledgment: hasAck ? nextQuestion.acknowledgment : null
+        }]);
         setInputValue(nextQuestion.mockAnswer || '');
         setCurrentIndex(prev => prev + 1);
       }, 500);
@@ -69,7 +71,7 @@ export default function ChatQAFlow({
   return (
     <div className="min-h-screen pb-20">
       <div className="max-w-4xl mx-auto px-6 py-8">
-        <BackButton to={backUrl}>← Back</BackButton>
+        <BackButton to={backUrl}>Back</BackButton>
 
         <div className="mt-6">
           <div className="flex items-center justify-between mb-2">
@@ -93,13 +95,20 @@ export default function ChatQAFlow({
                 className={`flex ${msg.type === 'user' ? 'justify-end' : 'justify-start'}`}
               >
                 <div 
-                  className={`max-w-[80%] px-4 py-3 rounded-2xl ${
+                  className={`max-w-[80%] px-5 py-4 rounded-2xl ${
                     msg.type === 'user' 
                       ? 'bg-purple-500 text-white rounded-br-md' 
-                      : 'bg-white text-gray-800 rounded-bl-md shadow-sm'
+                      : 'bg-white text-gray-800 rounded-bl-md shadow-sm border border-gray-100'
                   }`}
                 >
-                  <p className="text-sm whitespace-pre-wrap">{msg.content}</p>
+                  {msg.type === 'ai' && msg.acknowledgment ? (
+                    <div className="space-y-3">
+                      <p className="text-sm whitespace-pre-wrap">{msg.acknowledgment}</p>
+                      <p className="text-sm whitespace-pre-wrap font-medium pt-2 border-t border-gray-100">{msg.content}</p>
+                    </div>
+                  ) : (
+                    <p className="text-sm whitespace-pre-wrap">{msg.content}</p>
+                  )}
                 </div>
               </div>
             ))}

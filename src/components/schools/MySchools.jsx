@@ -20,7 +20,7 @@ export default function MySchools() {
     <div className="min-h-screen">
       <div className="max-w-7xl mx-auto px-6 py-8">
         <div className="flex items-center justify-between mb-8">
-          <BackButton to="/schools">← Back to Schools</BackButton>
+          <BackButton to="/schools">Back to Schools</BackButton>
           
           {savedSchools.length > 0 && (
             <div className="flex gap-3">
@@ -75,7 +75,10 @@ export default function MySchools() {
               <div key={school.id} className="relative group">
                 <SchoolCard 
                   school={school}
-                  onClick={() => navigate(`/schools/${school.id}`)}
+                  onClick={() => {
+                    sessionStorage.setItem('schoolDetailReferrer', '/my-schools');
+                    navigate(`/schools/${school.id}`);
+                  }}
                   showRemove={true} // Always show heart/remove button
                 />
                 {isEditMode && (
